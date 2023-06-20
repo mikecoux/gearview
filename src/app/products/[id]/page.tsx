@@ -2,7 +2,7 @@ import ProductDetail from "@/components/ProductDetail";
 
 async function getProduct(id:string) {
     // Include '{ cache: 'no-store' }' in the fetch to get fresh data with each request
-    const res = await fetch(`http://localhost:5050/products/${id}`)
+    const res = await fetch(`http://localhost:3000/api/products/${id}`)
 
     if (!res.ok) {
         throw new Error('Failed to fetch products.');

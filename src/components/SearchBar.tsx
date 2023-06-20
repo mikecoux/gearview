@@ -15,7 +15,7 @@ export default function SearchBar(){
             <input {...register("searchValue")} 
                 type="text" 
                 placeholder='Search for brands, products, reviewers...'
-                className='indent-2 outline-none bg-transparent placeholder:text-black'
+                className='indent-2 outline-none bg-transparent'
             />
             <button type='submit'>
                 <div className='outline outline-2 -outline-offset-1 rounded h-35 w-35 p-1' >
