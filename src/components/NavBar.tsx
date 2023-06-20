@@ -7,8 +7,12 @@ import {
     ProfileButton,
     SignupButton
 } from "@/components/Buttons.component"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 
-export default function NavBar() {
+export default async function NavBar() {
+    const session = await getServerSession(authOptions)
+
     return (
         <nav className="m-4 flex lg:flex-row lg:justify-between lg:relative z-10">
             <div className="flex lg:flex-row lg:space-x-4 items-center">
@@ -19,10 +23,17 @@ export default function NavBar() {
                 <Link href={'/feed'}>For You</Link>
             </div>
             <SearchBar />
-            <div className="flex lg:flex-row lg:space-x-2 items-center">
-                <LoginButton />
-                <SignupButton />
-            </div>
+            { !session ?
+                <div className="flex lg:flex-row lg:space-x-2 items-center">
+                    <LoginButton />
+                    <SignupButton />
+                </div>
+            :
+                <div className="flex lg:flex-row lg:space-x-2 items-center">
+                    <LogoutButton />
+                    <ProfileButton />
+                </div>
+            }
         </nav>
     )
 }

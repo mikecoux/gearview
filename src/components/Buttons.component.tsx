@@ -24,7 +24,7 @@ export const SignupButton = () => {
 
 export const ProfileButton = () => {
     return (
-        <Link href='/profile'className="bg-[#DF0906] rounded text-white py-1 px-2">
+        <Link href='/profile'className="rounded bg-slate-900 py-1 px-2 text-white">
             My Profile
         </Link>
     )
@@ -33,10 +33,10 @@ export const ProfileButton = () => {
 export const LogoutButton = () => {
     return (
         <button 
-            className="bg-white rounded hover:bg-neutral-200 py-1 px-2 outline outline-1 -outline-offset-1 text-black"
+            className="rounded hover:bg-neutral-200 outline outline-1 -outline-offset-1 py-1 px-2"
             onClick={() => signOut()}
         >
-            Sign Out
+            Log Out
         </button>
     )
 }
