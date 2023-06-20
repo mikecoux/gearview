@@ -4,9 +4,9 @@ import SearchBar from "./SearchBar"
 
 export default function NavBar() {
     return (
-        <nav className="m-4 flex lg:flex-row lg:justify-between lg:relative">
+        <nav className="m-4 flex lg:flex-row lg:justify-between lg:relative z-10">
             <div className="flex lg:flex-row lg:space-x-4 items-center">
-                <Link href={'/'}>
+                <Link href={'/'} className="">
                     <Image src="/assets/gearview-logo.png" alt="gearview logo" height={35} width={150} />
                 </Link>
                 <Link href={'/browse'}>Browse</Link>

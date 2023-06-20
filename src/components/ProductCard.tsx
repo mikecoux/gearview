@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 
-export default function ProductCard(){
+export default function ProductCard({ brand, id, images }:{ brand:string, id:string, images:string[] }){
     const sampleProduct = {
         id: 1,
         brand: "La Sportiva",
@@ -35,13 +35,15 @@ export default function ProductCard(){
 
     const tagsList = 
     (tags:string[]):any => {
-        tags.map((tag) =>
-            <span 
-                key={tag} 
-                className="bg-neutral-200 mr-2 text-sm rounded text-neutral-600 px-1"
-            >
-                {tag}
-            </span>
+        return (
+            tags.map((tag) =>
+                <span 
+                    key={tag} 
+                    className="bg-neutral-200 mr-2 text-sm rounded text-neutral-600 px-1"
+                >
+                    {tag}
+                </span>
+            )
         )
     }
 
@@ -50,7 +52,8 @@ export default function ProductCard(){
     .filter(review => review.featured === true)
     .map(review =>
         <div>
-            <h3>{review.username}</h3>
+            <h3 className="font-bold">{review.username}</h3>
+            <h5>{review.rating}</h5>
             <div>
                 {tagsList(review.tags)}
             </div>
@@ -58,17 +61,31 @@ export default function ProductCard(){
         </div>
     )
 
+    const featuredImgId = images[0].match(/(?<=media\/)(.*)(?=\.jpg)/)
+    let featuredImgURL = ''
+
+    if (featuredImgId){
+        featuredImgURL = process.env.CLOUDINARY_DOMAIN + featuredImgId[0] + '.jpg'
+    }
+
     return(
-        <Link href={`/products/${sampleProduct.id}`}>
-            <div>
-                <h3>{sampleProduct.brand}</h3>
+        <Link href={`/products/${id}`} className="lg:w-1/4 md:w-1/3 w-5/6 m-4">
+            <div className="flex flex-col items-center shadow-md p-8 space-y-2 h-full">
+                <h3 className="text-lg">{brand}</h3>
                 <h5>{sampleProduct.name}</h5>
-                <Image src={'/assets/fillerimg.png'} alt="product image" height={200} width={200} />
-                <p>{sampleProduct.gender} Size: {sampleProduct.size_us} ${sampleProduct.price}</p>
+                    <Image 
+                        src={featuredImgURL} 
+                        alt="product image"
+                        width={200}
+                        height={200}
+                        className="m-2"
+                    />
+                <p>{sampleProduct.gender} | Size: {sampleProduct.size_us} | ${sampleProduct.price}</p>
                 <div>
                     {tagsList(sampleProduct.tags)}
                 </div>
                 <h5>Rating: {sampleProduct.rating}</h5>
+                <hr className="h-1 w-full"/>
                 {featuredReview}
             </div>
         </Link>
