@@ -11,8 +11,6 @@ interface ProductObj {
 }
 
 async function getProducts() {
-    // Not sure why this doesn't work...
-    // const res = await fetch("/api/products");
     const res = await fetch("http://localhost:3000/api/products")
 
     if (!res.ok) {

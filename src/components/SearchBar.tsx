@@ -1,18 +1,43 @@
 'use client'
+
 import { useForm } from 'react-hook-form'
+import { useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 
-type FormData = {
-    searchValue: string;
-};
+interface SearchInput {
+    [q: string]: string
+}
 
 export default function SearchBar(){
-    const { register, handleSubmit } = useForm<FormData>()
-    const onSubmit = handleSubmit(data => console.log(data))
+    const { register, handleSubmit } = useForm()
+    const router = useRouter()
+    const searchParams:any = useSearchParams()!
+
+    // Get a new searchParams string by merging the current
+    // searchParams with a provided key/value pair
+    const createQueryString = useCallback(
+        (data:SearchInput) => {
+        const params = new URLSearchParams(searchParams)
+        for (let key in data){
+            params.set(key, data[key])
+        }
+    
+        return params.toString()
+        },
+        [searchParams]
+    )
+
+    // data is returned from react-hook-form as an object
+    // keys are set to the name the input is "registered" with
+    // on form submit, the keys and values are appended to the query string
+    const onSubmit = (data:SearchInput) => {
+        router.push('/search' + "?" + createQueryString(data))
+    }
 
     return (
-        <form onSubmit={onSubmit} className='lg:absolute lg:left-1/2 lg:top-4 lg:-translate-y-1/2 lg:-translate-x-1/2 flex flex-row items-center space-x-4 shadow-md'>
-            <input {...register("searchValue")} 
+        <form onSubmit={handleSubmit(onSubmit)} className='lg:absolute lg:left-1/2 lg:top-4 lg:-translate-y-1/2 lg:-translate-x-1/2 flex flex-row items-center space-x-4 shadow-md'>
+            <input {...register("q", {required: true})} 
                 type="text" 
                 placeholder='Search for brands, products, reviewers...'
                 className='indent-2 outline-none bg-transparent'
