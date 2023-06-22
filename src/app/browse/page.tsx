@@ -5,7 +5,7 @@ interface ProductObj {
     title: string
     gender: string
     price: string
-    rei_average_rating: string
+    rei_avg_rating: string
     rei_images: string[]
     rei_href: string
 }
@@ -29,6 +29,10 @@ export default async function Browse(){
             id={product._id}
             brand={product.brand}
             images={product.rei_images}
+            title={product.title}
+            gender={product.gender}
+            price={product.price}
+            rating={product.rei_avg_rating}
         />
     })
 

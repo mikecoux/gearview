@@ -1,37 +1,30 @@
 import Link from "next/link"
 import Image from "next/image"
 
-export default function ProductCard({ brand, id, images }:{ brand:string, id:string, images:string[] }){
-    const sampleProduct = {
-        id: 1,
-        brand: "La Sportiva",
-        name: "Bushido 2",
-        rating: 4,
-        price: 100.00,
-        size_us: 9,
-        gender: "Men's",
-        description: "This shoe can conquer technical trails, muddy terrain, but is not necessarily built for the long haul.",
-        tags: ["trail", "rock plate", "sturdy", "heavy"],
-        img: "/assets/fillerimg.png",
-        reviews: [
-            {
-                id: 1,
-                username: "mikecoux",
-                rating: 3.5,
-                description: "Scrambles well, but not comfortable on longer outings.",
-                tags: ["running", "scrambling"],
-                featured: true,
-            },
-            {
-                id: 2,
-                username: "peetah",
-                rating: 4,
-                description: "My go to trail runner. Fits my narrow foot well.",
-                tags: ["daily driver", "trail running", "running"],
-                featured: false
-            }
-        ]
-    }
+export default function ProductCard(
+    { brand, id, images, title, gender, price, rating }:
+    { brand:string, id:string, images:string[], title:string, gender:string, price:string, rating:string }
+){
+    const productReviews = [
+        {
+            id: 1,
+            username: "mikecoux",
+            rating: 3.5,
+            description: "Scrambles well, but not comfortable on longer outings.",
+            tags: ["running", "scrambling"],
+            featured: true,
+        },
+        {
+            id: 2,
+            username: "peetah",
+            rating: 4,
+            description: "My go to trail runner. Fits my narrow foot well.",
+            tags: ["daily driver", "trail running", "running"],
+            featured: false
+        }
+    ]
+
+    const productTags = ["trail", "rock plate", "sturdy", "heavy"]
 
     const tagsList = 
     (tags:string[]):any => {
@@ -47,8 +40,7 @@ export default function ProductCard({ brand, id, images }:{ brand:string, id:str
         )
     }
 
-    const featuredReview =
-    sampleProduct.reviews
+    const featuredReview = productReviews
     .filter(review => review.featured === true)
     .map(review =>
         <div>
@@ -72,7 +64,7 @@ export default function ProductCard({ brand, id, images }:{ brand:string, id:str
         <Link href={`/products/${id}`} className="lg:w-1/4 md:w-1/3 w-5/6 m-4">
             <div className="flex flex-col items-center shadow-md p-8 space-y-2 h-full">
                 <h3 className="text-lg">{brand}</h3>
-                <h5>{sampleProduct.name}</h5>
+                <h5>{title}</h5>
                     <Image 
                         src={featuredImgURL} 
                         alt="product image"
@@ -80,11 +72,11 @@ export default function ProductCard({ brand, id, images }:{ brand:string, id:str
                         height={200}
                         className="m-2"
                     />
-                <p>{sampleProduct.gender} | Size: {sampleProduct.size_us} | ${sampleProduct.price}</p>
+                <p>{gender} | {price}</p>
                 <div>
-                    {tagsList(sampleProduct.tags)}
+                    {tagsList(productTags)}
                 </div>
-                <h5>Rating: {sampleProduct.rating}</h5>
+                <h5>Rating: {rating}</h5>
                 <hr className="h-1 w-full"/>
                 {featuredReview}
             </div>

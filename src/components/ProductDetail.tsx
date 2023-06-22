@@ -1,40 +1,30 @@
 import Image from "next/image"
 
-export default function ProductDetail(
-    { data }:{ data: any }){
+interface DataObj {
+    _id: string
+    brand: string
+    title: string
+    gender: string
+    price: string
+    rei_avg_rating: string
+    rei_images: string[]
+    rei_href: string
+}
+interface ReviewObj {
+    _id: string
+    username: string
+    rating: number
+    description: string
+    product_id: string
+}
 
+export default function ProductDetail(
+    { data, reviews }:{ data:DataObj, reviews:ReviewObj[] }
+){
     const { brand, title, gender, price, rei_avg_rating, rei_images, rei_href } = data
 
-    const sampleProduct = {
-        id: 1,
-        brand: "La Sportiva",
-        name: "Bushido 2",
-        rating: 4,
-        price: 100.00,
-        size_us: 9,
-        gender: "Men's",
-        description: "This shoe can conquer technical trails, muddy terrain, but is not necessarily built for the long haul.",
-        tags: ["trail", "rock plate", "sturdy", "heavy"],
-        img: "/assets/fillerimg.png",
-        reviews: [
-            {
-                id: 1,
-                username: "mikecoux",
-                rating: 3.5,
-                description: "Scrambles well, but not comfortable on longer outings.",
-                tags: ["running", "scrambling"],
-                featured: true,
-            },
-            {
-                id: 2,
-                username: "peetah",
-                rating: 4,
-                description: "My go to trail runner. Fits my narrow foot well.",
-                tags: ["daily driver", "trail running", "running"],
-                featured: false
-            }
-        ]
-    }
+    const productTags = ["trail", "rock plate", "sturdy", "heavy"]
+    const reviewTags = ["running", "scrambling"]
 
     const featuredImgId = rei_images[0].match(/(?<=media\/)(.*)(?=\.jpg)/)
     let featuredImgURL = ''
@@ -57,14 +47,13 @@ export default function ProductDetail(
         )
     }
 
-    const allReviews =
-    sampleProduct.reviews
+    const allReviews = reviews
     .map(review =>
         <div>
             <h3 className="font-bold">{review.username}</h3>
             <h5>{review.rating}</h5>
             <div>
-                {tagsList(review.tags)}
+                {tagsList(reviewTags)}
             </div>
             <p>{review.description}</p>
         </div>
@@ -82,9 +71,9 @@ export default function ProductDetail(
                 className="m-2"
             />
             <p>{gender} | {price}</p>
-            {/* <div>
-                {tagsList(sampleProduct.tags)}
-            </div> */}
+            <div>
+                {tagsList(productTags)}
+            </div>
             <h5>Rating: {rei_avg_rating}</h5>
             <hr className="h-1 w-full"/>
             <div className="flex flex-col items-start space-y-4 w-full">
