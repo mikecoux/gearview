@@ -12,10 +12,12 @@ export default async function Profile() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/api/auth/signin");
+    redirect("/");
   }
 
   return (
-    <div>Welcome.</div>
+    <div>
+      <h1 className="lg:text-4xl">Welcome {session.user?.name}.</h1>
+    </div>
   )
 }

@@ -1,4 +1,5 @@
 import NavBar from '@/components/NavBar'
+import { NextAuthProvider } from './providers'
 import './globals.css'
 import { Schibsted_Grotesk } from 'next/font/google'
 
@@ -17,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={font_schib.className}>
-        <NavBar />
-        {children}
+        <NextAuthProvider>
+          <NavBar />
+          {children}
+        </NextAuthProvider>
       </body>
     </html>
   )

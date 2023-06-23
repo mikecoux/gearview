@@ -10,7 +10,7 @@ async function getProduct(id:string) {
 }
 
 async function getReviews(productId:string) {
-    const res = await fetch(`http://localhost:3000/api/reviews/${productId}`)
+    const res = await fetch(`http://localhost:3000/api/reviews/products/${productId}`)
     if (!res.ok) {
         throw new Error('Failed to fetch reviews.')
     }

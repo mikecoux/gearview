@@ -13,7 +13,11 @@ export default function ReviewCard(
 ) {
     return (
         <div>
-            <h3 className="font-bold">{data.username}</h3>
+            {data.username ?
+                <h3 className="font-bold">{data.username}</h3>
+            :
+                <h3 className="font-bold">&#40;anonymous&#41;</h3>
+            }
             <h5>{data.rating}</h5>
             <div>
                 <TagsList data={tags} />

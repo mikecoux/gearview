@@ -35,8 +35,8 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user._id,
           email: user.email,
-          username: user.username,
-          randomKey: "Hey cool",
+          name: user.username,
+          randomKey: "RandomKey",
         }
       },
     }),
@@ -56,17 +56,17 @@ export const authOptions: NextAuthOptions = {
         },
       };
     },
-    jwt: ({ token, user }) => {
-      console.log("JWT Callback", { token, user });
-      if (user) {
-        const u = user as unknown as any;
-        return {
-          ...token,
-          id: u.id,
-          randomKey: u.randomKey,
-        };
-      }
-      return token;
-    },
+    // jwt: ({ token, user }) => {
+    //   console.log("JWT Callback", { token, user });
+    //   if (user) {
+    //     const u = user as unknown as any;
+    //     return {
+    //       ...token,
+    //       id: u.id,
+    //       randomKey: u.randomKey,
+    //     };
+    //   }
+    //   return token;
+    // },
   },
 };

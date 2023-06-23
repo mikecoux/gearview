@@ -1,12 +1,44 @@
 'use client'
 
 import { useForm } from "react-hook-form"
+import { usePathname } from "next/navigation"
+import { useSession } from "next-auth/react";
 
-export default function ReviewForm({ showForm, setShowForm }:{ showForm:boolean, setShowForm:any }) {
+export default function ReviewForm(
+    { showForm, setShowForm }:{ showForm:boolean, setShowForm:any }
+) {
     const { register, handleSubmit } = useForm()
-    const onSubmit = (data:any) => {
-        console.log(data)
-        setShowForm(!showForm)
+    const currentProduct = usePathname().split('/')[2]
+    const { data: session } = useSession();
+
+    console.log(session)
+    console.log(currentProduct)
+
+    const onSubmit = async (data:any) => {
+        try {
+            const res = await fetch(`/api/reviews/products/${currentProduct}`, {
+                credentials: "include",
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    email: session?.user?.email,
+                    username: session?.user?.name,
+                    rating: data.rating,
+                    description: data.description
+                })
+            })
+
+            if (!res.ok) {
+                alert((await res.json()).message);
+                return;
+            }
+
+            setShowForm(!showForm)
+
+        } catch (e:any) {
+            console.error(e)
+            alert(e.message)
+        }
     }
 
     return (

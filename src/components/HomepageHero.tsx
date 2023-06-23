@@ -2,7 +2,9 @@
 
 // import Link from "next/link"
 import Image from "next/image"
+import Link from "next/link"
 import { useEffect, useState } from "react"
+
 import runHero from '../../public/images/run.jpg'
 import hikeHero from '../../public/images/hike.jpg'
 import climbHero from '../../public/images/climb.jpg'
@@ -103,7 +105,17 @@ export default function HomepageHero(){
                         <div className="bg-black w-full rounded-lg absolute top-0 left-0 h-[0%]" style={{ height: `${progBar3}%`}}></div>
                 </div>
             </div>
-            <h1 className='absolute top-1/4 left-[22.5%] font-bold text-xl lg:text-6xl'>{heroText[heroIndex]}</h1>
+            <div className='flex flex-col space-y-8 absolute top-1/4 left-[22.5%]'>
+                <h1 
+                    className='font-bold text-xl lg:text-6xl'>
+                    {heroText[heroIndex]}
+                </h1>
+                <Link 
+                    href={'/browse'}
+                    className="rounded hover:bg-neutral-200 outline outline-1 -outline-offset-1 py-1 px-2 w-fit ml-2 lg:text-2xl">
+                    Start Browsing
+                </Link>
+            </div>
         </div>
     )
 }
