@@ -1,4 +1,6 @@
 import Image from "next/image"
+import TagsList from "./TagsList"
+import ProductReviews from "./ProductReviews"
 
 interface DataObj {
     _id: string
@@ -24,7 +26,6 @@ export default function ProductDetail(
     const { brand, title, gender, price, rei_avg_rating, rei_images, rei_href } = data
 
     const productTags = ["trail", "rock plate", "sturdy", "heavy"]
-    const reviewTags = ["running", "scrambling"]
 
     const featuredImgId = rei_images[0].match(/(?<=media\/)(.*)(?=\.jpg)/)
     let featuredImgURL = ''
@@ -33,34 +34,8 @@ export default function ProductDetail(
         featuredImgURL = process.env.CLOUDINARY_DOMAIN + featuredImgId[0] + '.jpg'
     }
 
-    const tagsList = 
-    (tags:string[]):any => {
-        return (
-            tags.map((tag) =>
-                <span 
-                    key={tag} 
-                    className="bg-neutral-200 mr-2 text-sm rounded text-neutral-600 px-1"
-                >
-                    {tag}
-                </span>
-            )
-        )
-    }
-
-    const allReviews = reviews
-    .map(review =>
-        <div>
-            <h3 className="font-bold">{review.username}</h3>
-            <h5>{review.rating}</h5>
-            <div>
-                {tagsList(reviewTags)}
-            </div>
-            <p>{review.description}</p>
-        </div>
-    )
-
     return (
-        <div className="flex flex-col items-center p-8 space-y-8 h-full lg:w-1/2 md:w-2/3 w-5/6">
+        <div className="flex flex-col items-center p-8 space-y-4 h-full lg:w-1/2 md:w-2/3 w-5/6">
             <h1 className="text-4xl">{brand}</h1>
             <h3 className="text-2xl text-center">{title}</h3>
             <Image 
@@ -72,13 +47,12 @@ export default function ProductDetail(
             />
             <p>{gender} | {price}</p>
             <div>
-                {tagsList(productTags)}
+                <TagsList data={productTags} />
             </div>
             <h5>Rating: {rei_avg_rating}</h5>
             <hr className="h-1 w-full"/>
             <div className="flex flex-col items-start space-y-4 w-full">
-                <h3 className="text-2xl">Reviews:</h3>
-                {allReviews}
+                <ProductReviews data={reviews} />
             </div>
         </div>
     )

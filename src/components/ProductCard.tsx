@@ -1,57 +1,22 @@
 import Link from "next/link"
 import Image from "next/image"
+import ReviewCard from "./ReviewCard"
+import TagsList from "./TagsList"
 
 export default function ProductCard(
     { brand, id, images, title, gender, price, rating }:
     { brand:string, id:string, images:string[], title:string, gender:string, price:string, rating:string }
 ){
-    const productReviews = [
-        {
-            id: 1,
-            username: "mikecoux",
-            rating: 3.5,
-            description: "Scrambles well, but not comfortable on longer outings.",
-            tags: ["running", "scrambling"],
-            featured: true,
-        },
-        {
-            id: 2,
-            username: "peetah",
-            rating: 4,
-            description: "My go to trail runner. Fits my narrow foot well.",
-            tags: ["daily driver", "trail running", "running"],
-            featured: false
-        }
-    ]
-
-    const productTags = ["trail", "rock plate", "sturdy", "heavy"]
-
-    const tagsList = 
-    (tags:string[]):any => {
-        return (
-            tags.map((tag) =>
-                <span 
-                    key={tag} 
-                    className="bg-neutral-200 mr-2 text-sm rounded text-neutral-600 px-1"
-                >
-                    {tag}
-                </span>
-            )
-        )
+    const reviewData = {
+        _id: "rando133",
+        username: "mikecoux",
+        rating: 3.5,
+        description: "Scrambles well, but not comfortable on longer outings.",
+        product_id: "rando234",
     }
 
-    const featuredReview = productReviews
-    .filter(review => review.featured === true)
-    .map(review =>
-        <div>
-            <h3 className="font-bold">{review.username}</h3>
-            <h5>{review.rating}</h5>
-            <div>
-                {tagsList(review.tags)}
-            </div>
-            <p>{review.description}</p>
-        </div>
-    )
+    const productTags = ["trail", "rock plate", "sturdy", "heavy"]
+    const reviewTags = ["running", "scrambling"]
 
     const featuredImgId = images[0].match(/(?<=media\/)(.*)(?=\.jpg)/)
     let featuredImgURL = ''
@@ -74,11 +39,11 @@ export default function ProductCard(
                     />
                 <p>{gender} | {price}</p>
                 <div>
-                    {tagsList(productTags)}
+                    <TagsList data={productTags} />
                 </div>
                 <h5>Rating: {rating}</h5>
                 <hr className="h-1 w-full"/>
-                {featuredReview}
+                <ReviewCard data={reviewData} tags={reviewTags} />
             </div>
         </Link>
     )

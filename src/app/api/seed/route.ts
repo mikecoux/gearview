@@ -11,15 +11,20 @@ export async function GET (request:Request) {
     const password = await hash("password123", 12)
     const user = {
         email: "admin@gearview.com",
-        name: "Admin",
+        username: "admin",
         password
     }
 
-    const result = await coll.insertOne(user)
+    try{
+        const result = await coll.insertOne(user)
 
-    return NextResponse.json({
-        connected: result.acknowledged,
-        user: result.insertedId
-    })
+        return NextResponse.json({
+            connected: result.acknowledged,
+            user: result.insertedId
+        })
+    } catch (e) {
+        console.error(e)
+        return NextResponse.json("Admin user already created.")
+    }
 
 }

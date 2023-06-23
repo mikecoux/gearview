@@ -35,12 +35,15 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user._id,
           email: user.email,
-          name: user.name,
+          username: user.username,
           randomKey: "Hey cool",
         }
       },
     }),
   ],
+  pages: {
+    signIn: "/login"
+  },
   callbacks: {
     session: ({ session, token }) => {
       console.log("Session Callback", { session, token });
