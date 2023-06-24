@@ -10,7 +10,7 @@ export default function ProductCard(
     const reviewData = {
         _id: "rando133",
         username: "mikecoux",
-        rating: 3.5,
+        rating: "3.5",
         description: "Scrambles well, but not comfortable on longer outings.",
         product_id: "rando234",
     }
@@ -43,7 +43,7 @@ export default function ProductCard(
                 </div>
                 <h5>Rating: {rating}</h5>
                 <hr className="h-1 w-full"/>
-                <ReviewCard data={reviewData} tags={reviewTags} />
+                <ReviewCard data={reviewData} tags={reviewTags} canEdit={false}/>
             </div>
         </Link>
     )

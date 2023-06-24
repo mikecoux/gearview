@@ -15,7 +15,7 @@ interface DataObj {
 interface ReviewObj {
     _id: string
     username: string
-    rating: number
+    rating: string
     description: string
     product_id: string
 }

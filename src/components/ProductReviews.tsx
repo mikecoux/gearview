@@ -6,8 +6,9 @@ import { useState } from "react"
 
 interface ReviewObj {
     _id: string
-    username: string
-    rating: number
+    email?: string
+    username?: string
+    rating: string
     description: string
     product_id: string
 }
@@ -17,7 +18,13 @@ export default function ProductReviews({ data }:{ data:ReviewObj[] }) {
 
     const reviewTags = ["running", "scrambling"]
 
-    const allReviews = data.map(review => <ReviewCard key={review._id} data={review} tags={reviewTags} />)
+    const allReviews = data.map(review => 
+        <ReviewCard 
+            key={review._id} 
+            data={review} 
+            tags={reviewTags} 
+            canEdit={false}
+        />)
 
     return ( 
         <>
