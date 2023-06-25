@@ -13,7 +13,7 @@ export default function LoginForm() {
                 email: data.email,
                 password: data.password,
                 redirect: true,
-                callbackUrl: '/'
+                callbackUrl: '/profile'
             })
 
         } catch(e:any){

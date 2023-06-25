@@ -1,24 +1,26 @@
-import Image from "next/image"
-import Link from "next/link"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import {
+    MobileLoginButton,
+    MobileProfileButton,
+    MobileMenu
+} from "@/components/Buttons.component"
 import SearchBar from "./SearchBar"
 
-export default function MobileNavBar() {
+// Only return the mobile nav bar on screens less that 1024px wide
+export default async function MobileNavBar() {
+    const session = await getServerSession(authOptions)
+
     return (
-        <nav>
-            <div className="inline-block">
-                <Image src="/assets/mobile-nav-icon.png" alt="click to navigate" height={35} width={35} />
-                <ul className="hidden absolute space-y-2">
-                    <li><Link href={'/'}>Home</Link></li>
-                    <li><Link href={'/browse'}>Browse</Link></li>
-                    <li><Link href={'/feed'}>For You</Link></li>
-                </ul>
-            </div>
+        <nav 
+            className="lg:hidden z-10 flex flex-row justify-between relative m-4">
+            <MobileMenu />
             <SearchBar />
-            <div>
-                <Link href={'/login'}>
-                    <Image src="/assets/account-icon.png" alt="click to login" height={35} width={35} />
-                </Link>
-            </div>
+            { !session ?
+                <MobileLoginButton />
+            : 
+                <MobileProfileButton />
+            }
         </nav>
     )
 }

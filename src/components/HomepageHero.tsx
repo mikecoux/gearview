@@ -84,35 +84,35 @@ export default function HomepageHero(){
                     <Image 
                         src={mobileHeroImgs[heroIndex]} 
                         alt='homepage-hero' priority 
-                        className='w-full h-auto opacity-75 absolute top-0 left-0 z-0'
+                        className='w-full h-auto opacity-60 lg:absolute top-0 left-0 z-0'
                     /> 
                     :
                     <Image 
                         src={heroImgs[heroIndex]} 
                         alt='homepage-hero' priority 
-                        className='w-full h-auto opacity-75 absolute top-0 left-0 z-0'
+                        className='w-full h-auto opacity-60 lg:absolute top-0 left-0 z-0'
                     />
                 }
             </div>
-            <div className="absolute top-1/4 left-[20%] flex flex-col">
-                <div className="bg-slate-100/50 w-2 h-[60px] relative rounded-lg mb-2">
+            <div className="absolute top-1/4 left-[15%] md:left-[20%] flex flex-col">
+                <div className="bg-slate-100/50 w-2 h-[40px] md:h-[60px] relative rounded-lg mb-2">
                         <div className="bg-black w-full rounded-lg absolute top-0 left-0 h-[0%]" style={{ height: `${progBar}%`}}></div>
                 </div>
-                <div className="bg-slate-100/50 w-2 h-[60px] relative rounded-lg mb-2">
+                <div className="bg-slate-100/50 w-2 h-[40px] md:h-[60px] relative rounded-lg mb-2">
                         <div className="bg-black w-full rounded-lg absolute top-0 left-0 h-[0%]" style={{ height: `${progBar2}%`}}></div>
                 </div>
-                <div className="bg-slate-100/50 w-2 h-[60px] relative rounded-lg mb-2">
+                <div className="bg-slate-100/50 w-2 h-[40px] md:h-[60px] relative rounded-lg mb-2">
                         <div className="bg-black w-full rounded-lg absolute top-0 left-0 h-[0%]" style={{ height: `${progBar3}%`}}></div>
                 </div>
             </div>
-            <div className='flex flex-col space-y-8 absolute top-1/4 left-[22.5%]'>
+            <div className='flex flex-col space-y-4 absolute top-1/4 left-[22.5%] w-1/2 md:w-fit'>
                 <h1 
-                    className='font-bold text-xl lg:text-6xl'>
+                    className='font-bold text-2xl md:text-4xl lg:text-6xl'>
                     {heroText[heroIndex]}
                 </h1>
                 <Link 
                     href={'/browse'}
-                    className="rounded hover:bg-neutral-200 outline outline-1 -outline-offset-1 py-1 px-2 w-fit ml-2 lg:text-2xl">
+                    className="rounded hover:bg-neutral-200 outline outline-3 -outline-offset-1 py-1 px-2 w-fit ml-1 lg:text-2xl">
                     Start Browsing
                 </Link>
             </div>

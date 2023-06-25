@@ -14,8 +14,8 @@ export default async function NavBar() {
     const session = await getServerSession(authOptions)
 
     return (
-        <nav className="m-4 flex lg:flex-row lg:justify-between lg:relative z-10">
-            <div className="flex lg:flex-row lg:space-x-4 items-center">
+        <nav className="m-4 flex-row justify-between relative z-10 hidden lg:flex">
+            <div className="flex lg:flex-row lg:space-x-4 items-center inline">
                 <Link href={'/'} className="">
                     <Image src="/assets/gearview-logo.png" alt="gearview logo" height={35} width={150} />
                 </Link>
@@ -24,12 +24,12 @@ export default async function NavBar() {
             </div>
             <SearchBar />
             { !session ?
-                <div className="flex lg:flex-row lg:space-x-2 items-center">
+                <div className="flex flex-row space-x-2 items-center">
                     <LoginButton />
                     <SignupButton />
                 </div>
             :
-                <div className="flex lg:flex-row lg:space-x-2 items-center">
+                <div className="flex flex-row space-x-2 items-center ">
                     <LogoutButton />
                     <ProfileButton />
                 </div>

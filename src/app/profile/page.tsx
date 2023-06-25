@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import UserReviews from "@/components/UserReviews";
+import { LogoutButton } from "@/components/Buttons.component";
 
 interface ReviewObj {
   _id: string
@@ -36,6 +37,9 @@ export default async function Profile() {
       : 
         <h3>No reviews found... Go write your first one!</h3>
       }
+      <span>
+        <LogoutButton />
+      </span>
     </div>
   )
 }
