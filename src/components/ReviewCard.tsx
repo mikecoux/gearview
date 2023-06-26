@@ -1,14 +1,5 @@
 import TagsList from "./TagsList"
 
-interface ReviewObj {
-    _id: string
-    email?: string
-    username?: string
-    rating: string
-    description: string
-    product_id: string
-}
-
 export default function ReviewCard(
     { data, tags, canEdit }: { data:ReviewObj, tags:string[], canEdit:boolean }
 ) {

@@ -22,7 +22,9 @@ export async function POST (
     { params }: { params: { productId: string } }
 ) {
     try {
-        const { email, username, rating, description } = (await req.json()) as {
+        // destructure the request and assign types
+        const { id, email, username, rating, description } = (await req.json()) as {
+            id: string | null | undefined,
             email: string | null | undefined,
             username: string | null | undefined,
             rating: string,
@@ -33,10 +35,11 @@ export async function POST (
         const coll = client.db('gearview-db').collection('reviews')
         
         const result = await coll.insertOne({
-            email: email,
             username: username,
             rating: rating,
             description: description,
+            email: email,
+            user_id: id,
             product_id: params.productId
         });
 

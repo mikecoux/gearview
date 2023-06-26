@@ -3,37 +3,28 @@
 import { useForm } from "react-hook-form"
 import { usePathname } from "next/navigation"
 import { useSession } from "next-auth/react";
+import { getProductReviews, postReview } from "@/lib/requests";
 
 export default function ReviewForm(
-    { showForm, setShowForm }:{ showForm:boolean, setShowForm:any }
+    { showForm, setShowForm, setReviewData }
+    : { showForm:boolean, setShowForm:any, setReviewData:any }
 ) {
     const { register, handleSubmit } = useForm()
     const currentProduct = usePathname().split('/')[2]
     const { data: session } = useSession();
 
-    console.log(session)
-    console.log(currentProduct)
-
+    // Why can't I apply an interface to 'data'??
     const onSubmit = async (data:any) => {
         try {
-            const res = await fetch(`/api/reviews/products/${currentProduct}`, {
-                credentials: "include",
-                method: "POST",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({
-                    email: session?.user?.email,
-                    username: session?.user?.name,
-                    rating: data.rating,
-                    description: data.description
-                })
-            })
+            // post review with productId, user, and review data as params
+            const res = await postReview(currentProduct, session?.user, data)
 
-            if (!res.ok) {
-                alert((await res.json()).message);
-                return;
+            // Refreshes review data and closes the review form after submit
+            if (res) {
+                const newData = await getProductReviews(currentProduct)
+                setReviewData(newData)
+                setShowForm(!showForm)
             }
-
-            setShowForm(!showForm)
 
         } catch (e:any) {
             console.error(e)

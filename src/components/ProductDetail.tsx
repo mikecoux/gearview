@@ -2,26 +2,8 @@ import Image from "next/image"
 import TagsList from "./TagsList"
 import ProductReviews from "./ProductReviews"
 
-interface DataObj {
-    _id: string
-    brand: string
-    title: string
-    gender: string
-    price: string
-    rei_avg_rating: string
-    rei_images: string[]
-    rei_href: string
-}
-interface ReviewObj {
-    _id: string
-    username: string
-    rating: string
-    description: string
-    product_id: string
-}
-
 export default function ProductDetail(
-    { data, reviews }:{ data:DataObj, reviews:ReviewObj[] }
+    { data, reviews }:{ data:ProductObj, reviews:ReviewObj[] }
 ){
     const { brand, title, gender, price, rei_avg_rating, rei_images, rei_href } = data
 

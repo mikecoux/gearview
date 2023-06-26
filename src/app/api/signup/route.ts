@@ -10,6 +10,7 @@ export async function POST (req:Request) {
             email: string,
             password: string
         }
+        
         // hash the password and create a new user obj
         const hashedPassword = await hash(password, 12)
         const user = {

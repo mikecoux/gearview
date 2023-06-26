@@ -2,6 +2,8 @@ import { hash } from "bcryptjs";
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+// Seed an admin user in Mongo
+
 export async function GET (request:Request) {
     const client = await clientPromise;
     const coll = client.db("gearview-db").collection('users')

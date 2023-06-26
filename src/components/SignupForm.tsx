@@ -2,50 +2,36 @@
 
 import { useForm } from "react-hook-form"
 import { signIn } from "next-auth/react"
-// import { useState } from "react"
 import Link from "next/link"
-
-// interface SignupData {
-//     username: string
-//     email: string
-//     password: string
-// }
+import { userSignup } from "@/lib/requests"
 
 export default function SignupForm() {
-    // const [isLoading, setIsLoading] = useState(false)
     const { register, handleSubmit } = useForm()
 
+    // is the user's password exposed to the client here??
     const onSubmit = async (data:any) => {
         try {
-            const res = await fetch('/api/signup', {
-                credentials: "include",
-                method: "POST",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({
-                    username: data.username,
-                    email: data.email,
-                    password: data.password
-                })
-            })
-
-            if (!res.ok) {
-                alert((await res.json()).message);
-                return;
-            }
-
-            signIn("credentials",{
+            // post the user
+            const res = await userSignup({
+                username: data.username,
                 email: data.email,
-                password: data.password,
-                redirect: true,
-                callbackUrl: '/'
+                password: data.password
             })
 
-        } catch(e:any){
+            // if the user post request is successful
+            // login the user with the provided credentials
+            if (res) {
+                signIn("credentials", {
+                    email: data.email,
+                    password: data.password,
+                    redirect: true,
+                    callbackUrl: '/'
+                })
+            }
+        } catch(e) {
             console.error(e)
-            alert(e.message)
         }
     }
-
     return (
         <div 
             className="flex flex-col fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-4/6 md:w-1/3 lg:w-1/6">

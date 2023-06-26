@@ -1,72 +1,71 @@
-import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
-import clientPromise from "./mongodb";
+import { userLogin } from "./requests";
+import type { NextAuthOptions } from 'next-auth'
 
 export const authOptions: NextAuthOptions = {
-  session: {
-    strategy: "jwt",
-  },
-  providers: [
-    CredentialsProvider({
-      name: "Email",
-      credentials: {
-        email: {
-          label: "Email",
-          type: "email",
-          placeholder: "example@example.com",
+    providers: [
+        CredentialsProvider({
+        // The name to display on the sign in form (e.g. "Sign in with...")
+        name: "email.",
+        // `credentials` is used to generate a form on the sign in page.
+        // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+        // e.g. domain, username, password, 2FA token, etc.
+        // You can pass any HTML attribute to the <input> tag through the object.
+        credentials: {
+          email: { label: "Email", type: "email", placeholder: "example@example.com" },
+          password: { label: "Password", type: "password" }
         },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials):Promise<any> {
-        if (!credentials?.email || !credentials.password) {
-          return null
-        }
 
-        const client = await clientPromise;
-        const coll = client.db("gearview-db").collection('users')
-        const query = { email: credentials.email }
+        // creates the user session if authorized
+        // returning 'null' alerts the user of a login error
+        async authorize(credentials, req) {
+            // Error if email & password are not supplied
+            if (!credentials?.email || !credentials.password) {
+                return null
+            }
+            
+            const user = await userLogin(credentials)
+    
+            if (user) {
+                return user
 
-        const user = await coll.findOne(query)
-        if (!user || !(await compare(credentials.password, user.password))) {
-          return null
+            } else {
+                return null
+            }
         }
-
-        return {
-          id: user._id,
-          email: user.email,
-          name: user.username,
-          randomKey: "RandomKey",
-        }
-      },
-    }),
-  ],
-  pages: {
-    signIn: "/login"
-  },
-  callbacks: {
-    session: ({ session, token }) => {
-      console.log("Session Callback", { session, token });
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          randomKey: token.randomKey,
-        },
-      };
+    })],
+    // redirect to custom login page
+    pages: {
+        signIn: "/login"
     },
-    // jwt: ({ token, user }) => {
-    //   console.log("JWT Callback", { token, user });
-    //   if (user) {
-    //     const u = user as unknown as any;
-    //     return {
-    //       ...token,
-    //       id: u.id,
-    //       randomKey: u.randomKey,
-    //     };
-    //   }
-    //   return token;
-    // },
-  },
-};
+    // jwt is default
+    // this is redundant
+    session: {
+        strategy: "jwt"
+    },
+    // callbacks allow you to return more data than the session default
+    // data flows from authentication -> jwt -> session
+    callbacks: {
+        jwt: async ({ token, user }) => {
+            if (user) {
+                const u = user as unknown as any
+                return {
+                    ...token,
+                    id: u._id,
+                    username: u.username
+                }
+            }
+            return token
+        },
+        session: async ({ session, token }) => {
+            return {
+                ...session,
+                user: {
+                    ...session.user,
+                    id: token.id,
+                    username: token.username
+                }
+            }
+        }
+    }
+}

@@ -1,7 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
-// Get all products
+// Get all products from Mongo
 
 export async function GET () {
     const client = await clientPromise;

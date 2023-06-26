@@ -2,7 +2,7 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
-// Get one product
+// Get one product from Mongo
 
 export async function GET (
     request: Request,

@@ -1,37 +1,10 @@
 import ProductCard from "@/components/ProductCard";
-
-interface ProductObj {
-    _id: string
-    brand: string
-    title: string
-    gender: string
-    price: string
-    rei_avg_rating: string
-    rei_images: string[]
-    rei_href: string
-}
-
+import { getAllProducts, getSearchResults } from "@/lib/requests";
 interface SearchResult {
     brand: string
     title: string
     objectID: string
     _highlightResult: any
-}
-
-async function getSearchResults(query:string) {
-    const res = await fetch(`http://localhost:3000/api/search/${query}`)
-    if (!res.ok) {
-        throw new Error("Failed to fetch products.")
-    }
-    return res.json()
-}
-
-async function getAllProducts() {
-    const res = await fetch("http://localhost:3000/api/products")
-    if (!res.ok) {
-        throw new Error('Failed to fetch products.');
-    }
-    return res.json();
 }
 
 export default async function Search({ 

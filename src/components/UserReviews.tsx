@@ -2,15 +2,6 @@
 
 import ReviewCard from "./ReviewCard"
 
-interface ReviewObj {
-    _id: string
-    email?: string
-    username?: string
-    rating: string
-    description: string
-    product_id: string
-}
-
 export default function UserReviews (
     { data }: { data:ReviewObj[] }
 ) {

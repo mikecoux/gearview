@@ -1,6 +1,8 @@
 import algoliaClient from "@/lib/algolia";
 import { NextResponse } from "next/server";
 
+// Get search results from Algolia
+
 export async function GET(
     req: Request,
     { params }: { params: { q: string } }
