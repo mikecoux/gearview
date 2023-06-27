@@ -1,91 +1,108 @@
-// fetch functions live here
-// Include '{ cache: 'no-store' }' in the fetch to get fresh data with each request
-// domain prefix not necessary if called from client component
+import mongoClient from "@/lib/mongodb";
+import algoliaClient from "@/lib/algolia";
+import { ObjectId } from "mongodb";
 
-import { Session } from "next-auth";
+/**
+ * Cannot make API calls to the server when building for production
+ * ^ possibly b/c the server needs the data at build time
+ * Cannot make calls to MongoDB from client components
+ * when calling the function inside server component have to declare as type 'any'??
+ */
 
 // Get all products from Mongo
 export async function getAllProducts() {
-    const res = await fetch("http://localhost:3000/api/products")
-    if (!res.ok) {
-        throw new Error('Failed to fetch products.');
+    try {
+        const client = await mongoClient;
+        const coll = client.db("gearview-db").collection('products')
+
+        const results = await coll.find({})
+            .toArray();
+
+        return results
+
+    } catch (err) {
+        throw new Error(
+            "Failed to fetch all products.", 
+            { cause: err }
+        )
     }
-    return res.json();
 }
 
 // Get a specific product from Mongo
 export async function getProduct(id:string) {
-    const res = await fetch(`http://localhost:3000/api/products/${id}`, { cache: 'no-store' })
-    if (!res.ok) {
-        throw new Error('Failed to fetch product.');
+    try {
+        const client = await mongoClient;
+        const coll = client.db("gearview-db").collection('products')
+        const query = { _id: new ObjectId(id) }
+        
+        const result = await coll.findOne(query)
+
+        return result
+
+    } catch (err) {
+        throw new Error(
+            "Failed to fetch product.", 
+            { cause: err }
+        )
     }
-    return res.json();
 }
 
 // Get all reviews for a given product from Mongo
 export async function getProductReviews(productId:string) {
-    const res = await fetch(`http://localhost:3000/api/reviews/products/${productId}`)
-    if (!res.ok) {
-        throw new Error('Failed to fetch product reviews.')
+    try {
+        const client = await mongoClient;
+        const coll = client.db('gearview-db').collection('reviews')
+        const query = { product_id: productId }
+
+        const results = await coll.find(query)
+            .toArray();
+
+        return results
+
+    } catch (err) {
+        throw new Error(
+            "Failed to fetch reviews for provided product.", 
+            { cause: err }
+        )
     }
-    return res.json()
 }
 
 // Get all reviews for a given user from Mongo
 export async function getUserReviews (userId:string | null | undefined) {
-    const res = await fetch (`http://localhost:3000/api/reviews/users/${userId}`)
-    if (!res.ok) {
-      throw new Error('Failed to fetch user reviews.');
+    try {
+        const client = await mongoClient;
+        const coll = client.db('gearview-db').collection('reviews')
+        const query = { user_id: userId }
+
+        const results = await coll.find(query)
+            .toArray();
+
+        return results
+
+    } catch (err) {
+        throw new Error(
+            "Failed to fetch reviews for provided user.", 
+            { cause: err }
+        )
     }
-    return res.json()
 }
 
 // Get results for a given query from Algolia
 export async function getSearchResults(query:string) {
-    const res = await fetch(`http://localhost:3000/api/search/${query}`)
-    if (!res.ok) {
-        throw new Error("Failed to fetch search results.")
-    }
-    return res.json()
-}
-
-// Post a product review to Mongo
-export async function postReview(productId:string, user:Session["user"] | undefined, review:userReviewData) {
-    const res = await fetch(`/api/reviews/products/${productId}`, {
-        credentials: "include",
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-            id: user?.id,
-            email: user?.email,
-            username: user?.username,
-            rating: review.rating,
-            description: review.description
+    try {
+        const index = algoliaClient.initIndex("gearview_products")
+        const results = await index.search(query, {
+            attributesToRetrieve: ['brand', 'title', 'objectID']
         })
-    })
-    if (!res.ok) {
-        throw new Error("Failed to post review.")
+
+        return results.hits
+
+    } catch (err) {
+        throw new Error(
+            "Failed to fetch search results.", 
+            { cause: err }
+        )
     }
-    return res.json()
-}
-
-// Attempt to log in a user with credentials from NextAuth
-export async function userLogin(data:LoginData) {
-    const res = await fetch('http://localhost:3000/api/login', {
-        credentials: "include",
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            email: data.email,
-            password: data.password
-        })
-    })
-
-    if (!res.ok) {
-        throw new Error("Failed to log in user.")
-    }
-
-    return res.json()
 }
 
 // Attempt to sign up a new user
@@ -107,14 +124,3 @@ export async function userSignup(data:SignupData) {
 
     return res.json()
 }
-
-// Check if a user is logged in and has an active session
-// Unsure why this only works in the browser
-export async function getSession() {
-    const res = await fetch('http://localhost:3000/api/session')
-    if (!res.ok) {
-        throw new Error("Failed to fetch session.")
-    }
-    return res.json()
-}
-

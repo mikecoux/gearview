@@ -1,16 +1,16 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import { userLogin } from "./requests";
+// import { userLogin } from "./requests";
 import type { NextAuthOptions } from 'next-auth'
+import { compare } from "bcryptjs";
+import mongoClient from "@/lib/mongodb";
+
 
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
-        // The name to display on the sign in form (e.g. "Sign in with...")
+        // The name to display on the sign in form
         name: "email.",
         // `credentials` is used to generate a form on the sign in page.
-        // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-        // e.g. domain, username, password, 2FA token, etc.
-        // You can pass any HTML attribute to the <input> tag through the object.
         credentials: {
           email: { label: "Email", type: "email", placeholder: "example@example.com" },
           password: { label: "Password", type: "password" }
@@ -24,14 +24,20 @@ export const authOptions: NextAuthOptions = {
                 return null
             }
             
-            const user = await userLogin(credentials)
-    
-            if (user) {
-                return user
+            // connect to Mongo 'users' collection
+            // lookup user by provided email
+            const client = await mongoClient;
+            const coll = client.db("gearview-db").collection('users')
+            const query = { email: credentials.email }
+            const user:any = await coll.findOne(query)
 
-            } else {
-                return null
+            // check for a user response from Mongo
+            // compare the provided pw with the hashed pw from the Mongo doc
+            if (!user || !(await compare(credentials.password, user.password))) {
+                return null;
             }
+    
+            return user
         }
     })],
     // redirect to custom login page

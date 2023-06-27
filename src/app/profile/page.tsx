@@ -7,7 +7,11 @@ import { getUserReviews } from "@/lib/requests";
 
 export default async function Profile() {
   const session = await getServerSession(authOptions)
-  const reviews:ReviewObj[] = await getUserReviews(session?.user.id)
+  const reviews:any = await getUserReviews(session?.user.id)
+  const newReviews = reviews.map((review:ReviewObj) => ({
+      ...review,
+      _id: review._id.toString()
+  }))
 
   if (!session) {
     redirect("/");
@@ -17,7 +21,7 @@ export default async function Profile() {
     <div>
       <h1 className="lg:text-4xl">Welcome {session.user.username}.</h1>
       {reviews?
-        <UserReviews data={reviews} />
+        <UserReviews data={newReviews} />
       : 
         <h3>No reviews found... Go write your first one!</h3>
       }

@@ -4,12 +4,12 @@ import ReviewCard from "./ReviewCard"
 import ReviewForm from "./ReviewForm"
 import { useState } from "react"
 
-export default function ProductReviews({ data }:{ data:ReviewObj[] }) {
+export default function ProductReviews({ reviews } : { reviews:ReviewObj[] }) {
     const [showForm, setShowForm] = useState<boolean>(false)
-    const [reviewData, setReviewData] = useState(data)
+    const [reviewData, setReviewData] = useState(reviews)
     const reviewTags = ["running", "scrambling"]
 
-    const allReviews = reviewData.map(review => 
+    const allReviews = reviewData.map((review:ReviewObj) => 
         <ReviewCard 
             key={review._id} 
             data={review} 

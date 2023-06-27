@@ -13,15 +13,23 @@ export default async function Search({
 }) {
 
     // Get a list of ordered product IDs from Algolia based on the search term
-    const searchResults = await getSearchResults(searchParams.q)
+    const searchResults:any = await getSearchResults(searchParams.q)
+
     // Get all products from Mongo
-    const allProducts = await getAllProducts()
+    // Turn the Mongo id into a string
+    const products:any = await getAllProducts()
+    const newProducts = products.map((product:ProductObj) => ({
+        ...product,
+        _id: product._id.toString()
+    }))
 
     // Iterate over each search result and find the corresponding product
     // Append the matched product to a new list
     const filteredProducts:ProductObj[] = []
     searchResults.forEach((result:SearchResult) => {
-        const matchedProduct = allProducts.find((product:ProductObj) => result.objectID === product._id)
+        const matchedProduct = newProducts.find((product:ProductObj) => {
+            return result.objectID === product._id
+        })
         filteredProducts.push(matchedProduct)
     })
 
@@ -42,7 +50,11 @@ export default async function Search({
         <div className="flex flex-col justify-center my-8">
             <h1 className="text-4xl text-center">Results for: {`${searchParams.q}`}</h1>
             <div className="flex flex-row flex-wrap justify-center">
-                {filteredProductCards}
+                { filteredProducts.length > 0 ? 
+                    filteredProductCards
+                : 
+                    <p className="mt-4">No results found...</p>
+                }
             </div>
         </div>
     )

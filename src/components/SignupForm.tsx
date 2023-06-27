@@ -12,11 +12,12 @@ export default function SignupForm() {
     const onSubmit = async (data:any) => {
         try {
             // post the user
-            const res = await userSignup({
-                username: data.username,
-                email: data.email,
-                password: data.password
-            })
+            // const res = await userSignup({
+            //     username: data.username,
+            //     email: data.email,
+            //     password: data.password
+            // })
+            const res = null
 
             // if the user post request is successful
             // login the user with the provided credentials

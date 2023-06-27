@@ -38,7 +38,7 @@ export default function SearchBar(){
     return (
         <form 
             onSubmit={handleSubmit(onSubmit)} 
-            className='absolute left-1/2 top-4 -translate-y-1/2 -translate-x-1/2 flex flex-row items-center space-x-4 shadow-md w-4/6 md:w-fit'>
+            className='absolute left-1/2 top-4 -translate-y-1/2 -translate-x-1/2 flex flex-row items-center space-x-4 shadow-md w-max md:w-fit'>
             <input {...register("q", {required: true})} 
                 type="text" 
                 placeholder='Search for brands, products, reviewers...'

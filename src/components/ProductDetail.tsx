@@ -7,6 +7,12 @@ export default function ProductDetail(
 ){
     const { brand, title, gender, price, rei_avg_rating, rei_images, rei_href } = data
 
+    // Serialize the value of _id before passing to client component
+    const newReviews = reviews.map(review => ({
+        ...review,
+        _id: review._id.toString()
+    }))
+
     const productTags = ["trail", "rock plate", "sturdy", "heavy"]
 
     const featuredImgId = rei_images[0].match(/(?<=media\/)(.*)(?=\.jpg)/)
@@ -34,7 +40,7 @@ export default function ProductDetail(
             <h5>Rating: {rei_avg_rating}</h5>
             <hr className="h-1 w-full"/>
             <div className="flex flex-col items-start space-y-4 w-full">
-                <ProductReviews data={reviews} />
+                <ProductReviews reviews={newReviews} />
             </div>
         </div>
     )
