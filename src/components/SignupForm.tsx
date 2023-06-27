@@ -1,9 +1,9 @@
 'use client'
 
 import { useForm } from "react-hook-form"
-import { signIn } from "next-auth/react"
+// import { signIn } from "next-auth/react"
 import Link from "next/link"
-import { userSignup } from "@/lib/requests"
+import { userSignup } from "@/lib/clientRequests"
 
 export default function SignupForm() {
     const { register, handleSubmit } = useForm()
@@ -12,23 +12,23 @@ export default function SignupForm() {
     const onSubmit = async (data:any) => {
         try {
             // post the user
-            // const res = await userSignup({
-            //     username: data.username,
-            //     email: data.email,
-            //     password: data.password
-            // })
-            const res = null
+            const res = await userSignup({
+                username: data.username,
+                email: data.email,
+                password: data.password
+            })
+            console.log(res)
 
             // if the user post request is successful
             // login the user with the provided credentials
-            if (res) {
-                signIn("credentials", {
-                    email: data.email,
-                    password: data.password,
-                    redirect: true,
-                    callbackUrl: '/'
-                })
-            }
+            // if (res) {
+            //     signIn("credentials", {
+            //         email: data.email,
+            //         password: data.password,
+            //         redirect: true,
+            //         callbackUrl: '/'
+            //     })
+            // }
         } catch(e) {
             console.error(e)
         }

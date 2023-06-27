@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const dataUrl = process.env.DATA_API_URI
+const dataUrl = process.env.BASE_DATA_API_URL
 const dataKey = process.env.DATA_API_KEY ?? ""
 
 export async function GET (

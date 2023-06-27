@@ -1,5 +1,5 @@
 import ProductCard from "@/components/ProductCard";
-import { getAllProducts } from "@/lib/requests";
+import { getAllProducts } from "@/lib/serverRequests";
 
 export default async function Browse(){
     const allProducts:any = await getAllProducts()

@@ -2,8 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import UserReviews from "@/components/UserReviews";
-import { LogoutButton } from "@/components/Buttons.component";
-import { getUserReviews } from "@/lib/requests";
+import { LogoutButton } from "@/components/NavButtons";
+import { getUserReviews } from "@/lib/serverRequests";
 
 export default async function Profile() {
   const session = await getServerSession(authOptions)

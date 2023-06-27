@@ -1,5 +1,5 @@
 import ProductDetail from "@/components/ProductDetail";
-import { getProduct, getProductReviews } from "@/lib/requests";
+import { getProduct, getProductReviews } from "@/lib/serverRequests";
 
 export default async function DetailPage ({ params }: { params: { id: string } }) {
     const productData:any = await getProduct(params.id)

@@ -1,9 +1,9 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-// import { userLogin } from "./requests";
 import type { NextAuthOptions } from 'next-auth'
 import { compare } from "bcryptjs";
-import mongoClient from "@/lib/mongodb";
 
+const dataUrl = process.env.BASE_DATA_API_URL
+const dataKey = process.env.DATA_API_KEY ?? ""
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -26,18 +26,32 @@ export const authOptions: NextAuthOptions = {
             
             // connect to Mongo 'users' collection
             // lookup user by provided email
-            const client = await mongoClient;
-            const coll = client.db("gearview-db").collection('users')
-            const query = { email: credentials.email }
-            const user:any = await coll.findOne(query)
+            const res = await fetch(`${dataUrl}/action/findOne`, {
+                method: "POST",
+                headers: {
+                    "api-key": dataKey,
+                    'Content-Type': 'application/json',
+                    'Access-Control-Request-Headers': '*'
+                },
+                body: JSON.stringify({
+                    collection: 'users',
+                    database: 'gearview-db',
+                    dataSource: 'GearviewStarterCluster',
+                    filter: {
+                        email: credentials.email
+                    }
+                })
+            })
+
+            const user = await res.json()
 
             // check for a user response from Mongo
             // compare the provided pw with the hashed pw from the Mongo doc
-            if (!user || !(await compare(credentials.password, user.password))) {
+            if (!user || !(await compare(credentials.password, user.document.password))) {
                 return null;
             }
     
-            return user
+            return user.document
         }
     })],
     // redirect to custom login page

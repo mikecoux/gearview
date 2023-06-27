@@ -6,7 +6,7 @@ import {
     LogoutButton,
     ProfileButton,
     SignupButton
-} from "@/components/Buttons.component"
+} from "@/components/NavButtons"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 

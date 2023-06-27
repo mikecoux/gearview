@@ -1,5 +1,5 @@
 import ProductCard from "@/components/ProductCard";
-import { getAllProducts, getSearchResults } from "@/lib/requests";
+import { getAllProducts, getSearchResults } from "@/lib/serverRequests";
 interface SearchResult {
     brand: string
     title: string

@@ -31,3 +31,23 @@ export async function getReviews(productId:string) {
     }
     return res.json()
 }
+
+// Attempt to sign up a new user
+export async function userSignup(data:SignupData) {
+    const res = await fetch('/api/signup', {
+        credentials: "include",
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            username: data.username,
+            email: data.email,
+            password: data.password
+        })
+    })
+
+    if (!res.ok) {
+        throw new Error("Failed to sign up user.")
+    }
+
+    return res.json()
+}

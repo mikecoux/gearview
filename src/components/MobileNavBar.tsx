@@ -4,7 +4,7 @@ import {
     MobileLoginButton,
     MobileProfileButton,
     MobileMenu
-} from "@/components/Buttons.component"
+} from "@/components/NavButtons"
 import SearchBar from "./SearchBar"
 
 // Only return the mobile nav bar on screens less that 1024px wide
