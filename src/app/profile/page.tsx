@@ -18,8 +18,8 @@ export default async function Profile() {
   }
 
   return (
-    <div>
-      <h1 className="lg:text-4xl">Welcome {session.user.username}.</h1>
+    <div className="flex flex-col items-center space-y-4 my-8">
+      <h1 className="text-3xl lg:text-4xl">Welcome {session.user.username} 😊</h1>
       {reviews?
         <UserReviews data={newReviews} />
       : 
