@@ -6,4 +6,7 @@ module.exports = {
 			'res.cloudinary.com'
 		]
 	},
+	experimental: {
+		serverActions: true,
+	},
 }

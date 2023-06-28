@@ -13,17 +13,11 @@ export default function ProductCard(
         rating: "3.5",
         description: "Scrambles well, but not comfortable on longer outings.",
         product_id: "rando234",
+        votes: "2"
     }
 
     const productTags = ["trail", "rock plate", "sturdy", "heavy"]
     const reviewTags = ["running", "scrambling"]
-
-    const featuredImgId = images[0].match(/(?<=media\/)(.*)(?=\.jpg)/)
-    let featuredImgURL = ''
-
-    if (featuredImgId){
-        featuredImgURL = process.env.CLOUDINARY_DOMAIN + featuredImgId[0] + '.jpg'
-    }
 
     return(
         <Link href={`/products/${id}`} className="lg:w-1/4 md:w-1/3 w-5/6 m-4">
@@ -31,7 +25,7 @@ export default function ProductCard(
                 <h3 className="text-lg">{brand}</h3>
                 <h5>{title}</h5>
                     <Image 
-                        src={featuredImgURL} 
+                        src={images[0]} 
                         alt="product image"
                         width={200}
                         height={200}
@@ -43,7 +37,7 @@ export default function ProductCard(
                 </div>
                 <h5>Rating: {rating}</h5>
                 <hr className="h-1 w-full"/>
-                <ReviewCard data={reviewData} tags={reviewTags} canEdit={false}/>
+                <ReviewCard data={reviewData} tags={reviewTags} canEdit={false} canVote={false}/>
             </div>
         </Link>
     )

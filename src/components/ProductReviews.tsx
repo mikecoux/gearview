@@ -15,6 +15,7 @@ export default function ProductReviews({ reviews } : { reviews:ReviewObj[] }) {
             data={review} 
             tags={reviewTags} 
             canEdit={false}
+            canVote={true}
         />)
 
     return ( 

@@ -26,6 +26,7 @@ interface ReviewObj {
     rating: string
     description: string
     product_id: string
+    votes: string
 }
 
 interface ProductObj {

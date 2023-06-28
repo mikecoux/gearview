@@ -11,6 +11,7 @@ export default function UserReviews (
             data={review} 
             tags={reviewTags} 
             canEdit={true}
+            canVote={false}
         />)
 
 

@@ -97,13 +97,14 @@ export async function PATCH (
     req: Request,
     { params }: { params: { id: string } }
 ) {
-    const { rating, description } = (await req.json()) as {
+    const { rating, description, votes } = (await req.json()) as {
         rating: string,
-        description: string
+        description: string,
+        votes: string
     }
 
     const revId = { $oid: params.id }
-    const query = { $set: { rating: rating, description: description }}
+    const query = { $set: { rating: rating, description: description, votes: votes }}
 
     const res = await fetch(`${dataUrl}/action/updateOne`, {
         method: "POST",

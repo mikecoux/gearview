@@ -15,19 +15,12 @@ export default function ProductDetail(
 
     const productTags = ["trail", "rock plate", "sturdy", "heavy"]
 
-    const featuredImgId = rei_images[0].match(/(?<=media\/)(.*)(?=\.jpg)/)
-    let featuredImgURL = ''
-
-    if (featuredImgId){
-        featuredImgURL = process.env.CLOUDINARY_DOMAIN + featuredImgId[0] + '.jpg'
-    }
-
     return (
         <div className="flex flex-col items-center p-8 space-y-4 h-full lg:w-1/2 md:w-2/3 w-5/6">
             <h1 className="text-4xl">{brand}</h1>
             <h3 className="text-2xl text-center">{title}</h3>
             <Image 
-                src={featuredImgURL} 
+                src={rei_images[0]} 
                 alt={`${title} product image`}
                 width={500}
                 height={500}

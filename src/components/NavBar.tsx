@@ -15,7 +15,7 @@ export default async function NavBar() {
 
     return (
         <nav className="m-4 flex-row justify-between relative z-10 hidden lg:flex">
-            <div className="flex lg:flex-row lg:space-x-4 items-center inline">
+            <div className="flex lg:flex-row lg:space-x-4 items-center">
                 <Link href={'/'} className="">
                     <Image src="/assets/gearview-logo.png" alt="gearview logo" height={35} width={150} />
                 </Link>
