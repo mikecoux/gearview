@@ -32,6 +32,36 @@ export async function getReviews(productId:string) {
     return res.json()
 }
 
+export async function deleteReview(reviewId:string) {
+    console.log(reviewId)
+    const res = await fetch(`/api/reviews/${reviewId}`, {
+        method: "DELETE",
+        headers: {"Content-Type":"application/json"}
+    })
+
+    if (!res.ok) {
+        throw new Error("Failed to delete review.")
+    }
+    return res.json()
+}
+
+export async function updateReview(reviewId:string, review:any) {
+    console.log(reviewId)
+    const res = await fetch(`/api/reviews/${reviewId}`, {
+        method: "PATCH",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            rating: review.rating,
+            description: review.description
+        })
+    })
+
+    if (!res.ok) {
+        throw new Error("Failed to delete review.")
+    }
+    return res.json()
+}
+
 // Attempt to sign up a new user
 export async function userSignup(data:SignupData) {
     const res = await fetch('/api/signup', {

@@ -1,5 +1,3 @@
-'use client'
-
 import ReviewCard from "./ReviewCard"
 
 export default function UserReviews (

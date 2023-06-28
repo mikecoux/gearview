@@ -5,6 +5,8 @@ import UserReviews from "@/components/UserReviews";
 import { LogoutButton } from "@/components/NavButtons";
 import { getUserReviews } from "@/lib/serverRequests";
 
+export const revalidate = 0
+
 export default async function Profile() {
   const session = await getServerSession(authOptions)
   const reviews:any = await getUserReviews(session?.user.id)

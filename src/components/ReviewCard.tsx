@@ -3,6 +3,19 @@
 import TagsList from "./TagsList"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { deleteReview, updateReview } from "@/lib/clientRequests"
+
+interface EditData {
+    rating: string
+    description: string
+}
+
+/**
+ * Need to:
+ * add dynamic review tags
+ * change username to the product reviewed
+ * add voting - highlight review should have the most votes 
+ */
 
 // Returns either the static review component or a form that \
 // defaults to the same values to appear as if you are editing the \
@@ -10,7 +23,16 @@ import { useForm } from "react-hook-form"
 export default function ReviewCard(
     { data, tags, canEdit }: { data:ReviewObj, tags:string[], canEdit:boolean }
 ) {
-    const [showEditForm, setShowEditForm] = useState<number>(0)
+    const [showEditForm, setShowEditForm] = useState<number>(0);
+    const [isHidden, setIsHidden] = useState(false);
+    const [reviewData, setReviewData] = useState({
+        rating: data.rating,
+        description: data.description
+    })
+
+    if (isHidden) {
+        return null
+    }
 
     return (
         <div>
@@ -22,13 +44,17 @@ export default function ReviewCard(
             {
                 {
                     0: <Review 
-                            data={data} 
+                            id={data._id}
+                            reviewData={reviewData} 
                             tags={tags} 
                             canEdit={canEdit} 
                             setShowEditForm={setShowEditForm}
+                            setIsHidden={setIsHidden}
                         />,
                     1: <ReviewEditForm 
-                            data={data} 
+                            id={data._id}
+                            reviewData={reviewData} 
+                            setReviewData={setReviewData}
                             tags={tags} 
                             setShowEditForm={setShowEditForm}
                         />
@@ -42,21 +68,23 @@ export default function ReviewCard(
 // Returns the static review component
 // Shows edit/delete buttons when rendered on profile page
 function Review (
-    { data, tags, canEdit, setShowEditForm }: 
-    { data:ReviewObj, tags:string[], canEdit:boolean, setShowEditForm:any }
+    { id, reviewData, tags, canEdit, setShowEditForm, setIsHidden }: 
+    { id:string, reviewData:EditData, tags:string[], canEdit:boolean, setShowEditForm:any, setIsHidden:any }
 ) {
-
-    function deleteReview() {
-        console.log('deleted')
+    
+    // Add loading state here
+    const onDelete = () => {
+        deleteReview(id)
+        setIsHidden(true)
     }
 
     return (
         <div>
-            <h5>{data.rating}</h5>
+            <h5>{reviewData.rating}</h5>
             <div>
                 <TagsList data={tags} />
             </div>
-            <p>{data.description}</p>
+            <p>{reviewData.description}</p>
             {canEdit ?
                 <div className="flex flex-row space-x-2 h-[10%] items-center lg:w-1/4">
                     <button 
@@ -67,7 +95,7 @@ function Review (
                     </button>
                     <button
                         className="bg-slate-900 rounded text-white py-1 px-2 w-1/2 my-1 h-fit"
-                        onClick={() => deleteReview()}
+                        onClick={() => onDelete()}
                     >
                         Delete
                     </button>
@@ -80,20 +108,22 @@ function Review (
 
 // Review form mirrors the static review component
 function ReviewEditForm (
-    { data, tags, setShowEditForm }: 
-    { data:ReviewObj, tags:string[], setShowEditForm:any }
+    { id, reviewData, setReviewData, tags, setShowEditForm }: 
+    { id:string, reviewData:EditData, setReviewData:any, tags:string[], setShowEditForm:any }
 ) {
     // extends useForm to add defaults??
     const methods = useForm({
         mode: "onSubmit",
         defaultValues: {
-            rating: data.rating,
-            description: data.description
+            rating: reviewData.rating,
+            description: reviewData.description
         }
     })
 
     const onSubmit = () => {
-        console.log(methods.getValues())
+        const updates = methods.getValues()
+        updateReview(id, updates)
+        setReviewData(updates)
         setShowEditForm(0)
     }
 
@@ -103,17 +133,19 @@ function ReviewEditForm (
             className="flex flex-col"
         >
             <input 
-                {...methods.register('rating')} 
-                type="text" 
+                {...methods.register('rating', {required: true, min: 1, max: 5})} 
+                type="number" 
                 name="rating"
-                className="w-fit"
+                min="1"
+                max="5"
+                className="w-[100px]"
             >
             </input>
             <input 
-                {...methods.register('description')} 
+                {...methods.register('description', {required: true})} 
                 type="text" 
                 name="description"
-                className="w-fit"
+                className="w-full"
             >
             </input>
             <div 
