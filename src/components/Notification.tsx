@@ -41,6 +41,7 @@ export default function Notification (props:any) {
                 id: props.id
             })
         }, 400)
+        // might need to clear timeout here
     }
 
     useEffect(() => {
@@ -51,7 +52,7 @@ export default function Notification (props:any) {
         <div 
             onMouseEnter={() => handlePauseTimer()} 
             onMouseLeave={() => handleStartTimer()}
-            className={`shadow-md bg-white rounded overflow-hidden opacity-90 translate-x-[120%] ${animation}`}
+            className={`shadow-md bg-white rounded overflow-hidden opacity-90 translate-x-[120%] ${animation} mb-4`}
         >
             <p className="p-2">
                 { props.message }

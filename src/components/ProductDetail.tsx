@@ -3,7 +3,7 @@ import TagsList from "./TagsList"
 import ProductReviews from "./ProductReviews"
 
 export default function ProductDetail(
-    { data, reviews }:{ data:ProductObj, reviews:ReviewObj[] }
+    { data, reviews, session }:{ data:ProductObj, reviews:ReviewObj[], session:any }
 ){
     const { brand, title, gender, price, rei_avg_rating, rei_images, rei_href } = data
 
@@ -30,10 +30,10 @@ export default function ProductDetail(
             <div>
                 <TagsList data={productTags} />
             </div>
-            <h5>Rating: {rei_avg_rating}</h5>
+            <h5>REI Rating: {rei_avg_rating}</h5>
             <hr className="h-1 w-full"/>
             <div className="flex flex-col items-start space-y-4 w-full">
-                <ProductReviews reviews={newReviews} />
+                <ProductReviews reviews={newReviews} session={session}/>
             </div>
         </div>
     )

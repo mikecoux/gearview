@@ -3,7 +3,7 @@
 import { Session } from "next-auth";
 
 // Post a review to Mongo via Data API
-export async function postReview(productId:string, user:Session["user"] | undefined, review:userReviewData) {
+export async function postReview(productId:string, user:Session["user"] | undefined, review:ReviewObj) {
     const res = await fetch(`/api/reviews/${productId}`, {
         credentials: "include",
         method: "POST",
@@ -13,7 +13,9 @@ export async function postReview(productId:string, user:Session["user"] | undefi
             email: user?.email,
             username: user?.username,
             rating: review.rating,
-            description: review.description
+            description: review.description,
+            voting_users: [],
+            num_votes: 0
         })
     })
     if (!res.ok) {
@@ -45,7 +47,7 @@ export async function deleteReview(reviewId:string) {
     return res.json()
 }
 
-export async function updateReview(reviewId:string, review:any) {
+export async function updateReview(reviewId:string, review:EditReviewData) {
     console.log(reviewId)
     const res = await fetch(`/api/reviews/${reviewId}`, {
         method: "PATCH",
@@ -53,7 +55,8 @@ export async function updateReview(reviewId:string, review:any) {
         body: JSON.stringify({
             rating: review.rating,
             description: review.description,
-            votes: review.votes
+            num_votes: review.num_votes,
+            voting_users: review.voting_users
         })
     })
 

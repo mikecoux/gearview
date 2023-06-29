@@ -1,17 +1,11 @@
 'use client'
 
 import TagsList from "./TagsList"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { deleteReview, updateReview } from "@/lib/clientRequests"
-import { useSession } from "next-auth/react"
+// import { useSession } from "next-auth/react"
 import { useNotification } from "@/app/providers"
-
-interface EditData {
-    rating: string
-    description: string
-    votes?: string
-}
 
 /**
  * Need to:
@@ -24,23 +18,115 @@ interface EditData {
 // Returns either the static review component or a form that \
 // defaults to the same values to appear as if you are editing the \
 // fields directly.
+
 export default function ReviewCard(
-    { data, tags, canEdit, canVote }: { data:ReviewObj, tags:string[], canEdit:boolean, canVote:boolean }
+    { data, tags, canEdit, canVote, session }: 
+    { data:ReviewObj, tags:string[], canEdit:boolean, canVote:boolean, session:any }
 ) {
+
     const [showEditForm, setShowEditForm] = useState<number>(0);
     const [isHidden, setIsHidden] = useState(false);
-    const [reviewData, setReviewData] = useState({
+    const [editReviewData, setEditReviewData] = useState<EditReviewData>({
         rating: data.rating,
         description: data.description,
-        votes: data.votes
+        num_votes: data.num_votes,
+        voting_users: data.voting_users
     })
 
+    // Check if user has voted
+    // const { data: session } = useSession();
+    
+
+    // – VOTE TYPE KEY – 0: no vote, 1: upvote, 2: downvote
+    const [voteType, setVoteType] = useState(checkVote())
+
+
+    function checkVote ():number {
+        // Loop through each recorded voter and assign the 
+        // previous vote state if applicable
+        if (session ) {
+    
+            const ids: string[] = []
+
+            editReviewData.voting_users.forEach((voter) => {
+                ids.push(voter.user_id)
+            })
+
+            if (session.user.id === ids[0]) {
+                console.log("user found!")
+
+                if (editReviewData.voting_users[0].vote.up_vote) {
+                    return 1
+                } else return 2
+
+            } else {
+                console.log("no user found")
+
+                return 0
+            }
+
+        } else {
+            console.log("no session found")
+            return 0
+        }
+
+    }
+
+    // Save the previous value of state
+    // causes a rerender with each vote
+    const prevVote = useRef(editReviewData)
+
+    useEffect(() => {
+        prevVote.current = editReviewData
+
+    }, [editReviewData])
+
+    if (!deepEqual(prevVote.current, editReviewData)) {
+
+        updateReview(data._id, editReviewData)
+
+    }
+
+
+    // the deep equal
+    // Used to evaluate compare the previous version "vote state"
+    // with the new one. If there is a difference, patch the DB
+    function deepEqual (prevReview:any, newReview:any, visited = new Map<any, any>()): boolean {
+
+        if (visited.has(prevReview) || visited.has(newReview)) {
+            return visited.get(prevReview) === newReview && visited.get(newReview) === prevReview;
+        }
+
+        visited.set(prevReview, newReview);
+        visited.set(newReview, prevReview);
+
+        // Get the keys of both objects
+        const prevKeys = Object.keys(prevReview)
+        const newKeys = Object.keys(newReview)
+
+        // Check if the number of keys is the same
+        if (prevKeys.length !== newKeys.length) {
+            return false;
+        }
+
+        // Iterate through the keys and compare the values recursively
+        for (const key of prevKeys) {
+            if (!newKeys.includes(key) || !deepEqual(prevReview[key], newReview[key], visited)) {
+                return false;
+            }
+        }
+
+        return true
+
+    }
+
+    // hide the review when user deletes
     if (isHidden) {
         return null
     }
 
     return (
-        <div className="hover:shadow-md p-4">
+        <div className="p-4">
             {data.username ?
                 <h3 className="font-bold">{data.username}</h3>
             :
@@ -50,19 +136,20 @@ export default function ReviewCard(
                 {
                     0: <Review 
                             id={data._id}
-                            reviewData={reviewData} 
-                            setReviewData={setReviewData}
-                            tags={tags} 
+                            voteType={voteType}
+                            setVoteType={setVoteType}
+                            editReviewData={editReviewData} 
+                            setEditReviewData={setEditReviewData}
+                            session={session}
+                            tags={tags}
                             canEdit={canEdit}
                             canVote={canVote} 
                             setShowEditForm={setShowEditForm}
                             setIsHidden={setIsHidden}
                         />,
                     1: <ReviewEditForm 
-                            id={data._id}
-                            reviewData={reviewData} 
-                            setReviewData={setReviewData}
-                            tags={tags} 
+                            editReviewData={editReviewData} 
+                            setEditReviewData={setEditReviewData}
                             setShowEditForm={setShowEditForm}
                         />
                 } [showEditForm]
@@ -76,19 +163,16 @@ export default function ReviewCard(
 // Shows edit/delete buttons when rendered on profile page
 // Shows voting buttons when rendered on product detail page
 function Review (
-    { id, reviewData, setReviewData, tags, canEdit, canVote, setShowEditForm, setIsHidden }: 
-    { id:string, reviewData:EditData, setReviewData:any, tags:string[], canEdit:boolean, canVote:boolean, setShowEditForm:any, setIsHidden:any }
+    { id, voteType, setVoteType, editReviewData, setEditReviewData, tags, canEdit, canVote, setShowEditForm, setIsHidden, session }: 
+    { id:string, voteType:number, setVoteType:any, editReviewData:EditReviewData, setEditReviewData:any, tags:string[], canEdit:boolean, canVote:boolean, setShowEditForm:any, setIsHidden:any, session:any }
 ) {
+
     // Use context to create an alert if a user tries to 
     // vote and isn't signed in
     const dispatch:any = useNotification()
 
     // Only logged in users can vote
-    const { data: session } = useSession();
-
-    // Only allow users to vote up/down one time
-    const [upVoted, setUpVoted] = useState(false)
-    const [downVoted, setDownVoted] = useState(false)
+    // const { data: session } = useSession();
     
     const onDelete = () => {
         deleteReview(id)
@@ -100,7 +184,7 @@ function Review (
             fireAlert()
         }
 
-        let numVotes = parseInt(reviewData['votes'] ?? "0");
+        let numVotes = editReviewData['num_votes']
         let newVotes = 0;
 
         if (vote===1) {
@@ -110,13 +194,13 @@ function Review (
             newVotes = onDownVote(numVotes)
         }
 
-        setReviewData( (reviewData:EditData) => {
+        setEditReviewData((editReviewData:EditReviewData) => {
+
             return {
-                ...reviewData,
-                'votes': newVotes.toString()
+                ...editReviewData,
+                'num_votes': newVotes
             }
         })
-
     }
 
     // use the dispatch passed via context 
@@ -131,20 +215,47 @@ function Review (
     // increment accordingly
     const onUpVote = (numVotes:number) => {
 
-        if (session && upVoted) {
+        if (session && voteType === 1) {
             numVotes -= 1
-            setUpVoted(false)
+            setVoteType(0)
+
+            setEditReviewData((editReviewData:EditReviewData) => {
+
+                return {
+                    ...editReviewData,
+                    'num_votes': editReviewData.num_votes - 1,
+                    'voting_users': editReviewData.voting_users.filter((voter) => {
+                        voter.user_id !== session.user.id
+                    }) ?? []
+                }
+            })
         }
 
-        if (session && (!upVoted && !downVoted)) {
+        if (session && voteType === 0) {
             numVotes += 1
-            setUpVoted(true)
-            setDownVoted(false)
+            setVoteType(1)
 
-        } else if (session && (!upVoted && downVoted)) {
+            setEditReviewData((editReviewData:EditReviewData) => {
+
+                return {
+                    ...editReviewData,
+                    'voting_users': [
+                        ...editReviewData.voting_users,
+                        {
+                            user_id: session.user.id,
+                            vote: {
+                                up_vote: true,
+                                down_vote: false
+                            }
+            
+                        }
+                    ]
+                }
+            })
+
+        } else if (session && voteType === 2) {
             numVotes += 2
-            setUpVoted(true)
-            setDownVoted(false)
+            setVoteType(1)
         }
         
         return numVotes
@@ -153,20 +264,47 @@ function Review (
     // decrement accordingly
     const onDownVote = (numVotes:number) => {
 
-        if (session && downVoted) {
+        if (session && voteType === 2) {
             numVotes += 1
-            setDownVoted(false)
+            setVoteType(0)
+
+            setEditReviewData((editReviewData:EditReviewData) => {
+
+                return {
+                    ...editReviewData,
+                    'num_votes': editReviewData.num_votes - 1,
+                    'voting_users': editReviewData.voting_users.filter((voter) => {
+                        voter.user_id !== session.user.id
+                    })
+                }
+            })
         }
 
-        if (session && (!downVoted && !upVoted)) {
+        if (session && voteType === 0) {
             numVotes -= 1
-            setDownVoted(true)
-            setUpVoted(false)
+            setVoteType(2)
 
-        } else if (session && (!downVoted && upVoted)) {
+            setEditReviewData((editReviewData:EditReviewData) => {
+
+                return {
+                    ...editReviewData,
+                    'voting_users': [
+                        ...editReviewData.voting_users,
+                        {
+                            user_id: session.user.id,
+                            vote: {
+                                up_vote: false,
+                                down_vote: true
+                            }
+            
+                        }
+                    ]
+                }
+            })
+
+        } else if (session && voteType === 1) {
             numVotes -= 2
-            setDownVoted(true)
-            setUpVoted(false)
+            setVoteType(2)
         }
         
         return numVotes
@@ -176,11 +314,11 @@ function Review (
     return (
         <div className="flex flex-row justify-between">
             <div className="w-[90%] space-y-1">
-                <h5 className="text-2xl">{reviewData.rating}</h5>
+                <h5 className="text-2xl">{editReviewData.rating}</h5>
                 <div>
                     <TagsList data={tags} />
                 </div>
-                <p>{reviewData.description}</p>
+                <p>{editReviewData.description}</p>
                 {canEdit ?
                     <div className="flex flex-row space-x-2 items-center w-1/2 md:w-1/3 mt-2">
                         <button 
@@ -205,16 +343,16 @@ function Review (
                         onClick={() => onVote(1)}
                         className=""
                     >
-                        { upVoted ? "▲" : "△" }
+                        { voteType === 1 ? "▲" : "△" }
                     </button>
                     <span className="">
-                        {reviewData.votes ?? "0"}
+                        {editReviewData.num_votes}
                     </span>
                     <button
                         onClick={() => onVote(2)}
                         className=""
                     >
-                        {downVoted ? "▼" : "▽" }
+                        { voteType === 2 ? "▼" : "▽" }
                     </button>
                 </div>
             : null
@@ -225,23 +363,29 @@ function Review (
 
 // Review form mirrors the core review component
 function ReviewEditForm (
-    { id, reviewData, setReviewData, tags, setShowEditForm }: 
-    { id:string, reviewData:EditData, setReviewData:any, tags:string[], setShowEditForm:any }
+    { editReviewData, setEditReviewData, setShowEditForm }: 
+    { editReviewData:EditReviewData, setEditReviewData:any, setShowEditForm:any }
 ) {
     // extends useForm to add defaults??
     const methods = useForm({
         mode: "onSubmit",
         defaultValues: {
-            rating: reviewData.rating,
-            description: reviewData.description
+            rating: editReviewData.rating,
+            description: editReviewData.description
         }
     })
 
     const onSubmit = () => {
-        const updates:EditData = methods.getValues()
-        updates['votes'] = reviewData.votes
-        updateReview(id, updates)
-        setReviewData(updates)
+        const updates = methods.getValues()
+
+        setEditReviewData((editReviewData:EditReviewData) => {
+            return {
+                ...editReviewData,
+                'rating': updates.rating,
+                'description': updates.description
+            }
+        })
+
         setShowEditForm(0)
     }
 

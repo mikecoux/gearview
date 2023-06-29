@@ -32,12 +32,13 @@ export async function POST (
     req: Request,
     { params }: { params: { id: string } }
 ) {
-    const { id, email, username, rating, description } = (await req.json()) as {
+    const { id, username, rating, description, num_votes, voting_users } = (await req.json()) as {
         id: string | null | undefined,
-        email: string | null | undefined,
         username: string | null | undefined,
         rating: string,
-        description: string
+        description: string,
+        num_votes: number,
+        voting_users: ReviewObj["voting_users"]
     }
 
     const res = await fetch(`${dataUrl}/action/insertOne`, {
@@ -55,7 +56,8 @@ export async function POST (
                 username: username,
                 rating: rating,
                 description: description,
-                email: email,
+                num_votes: num_votes,
+                voting_users: voting_users,
                 user_id: id,
                 product_id: params.id
             }
@@ -97,14 +99,15 @@ export async function PATCH (
     req: Request,
     { params }: { params: { id: string } }
 ) {
-    const { rating, description, votes } = (await req.json()) as {
-        rating: string,
+    const { rating, description, num_votes, voting_users } = (await req.json()) as {
+        rating: number,
         description: string,
-        votes: string
+        num_votes: number,
+        voting_users: ReviewObj["voting_users"]
     }
 
     const revId = { $oid: params.id }
-    const query = { $set: { rating: rating, description: description, votes: votes }}
+    const query = { $set: { rating: rating, description: description, num_votes: num_votes, voting_users: voting_users }}
     console.log("in the patch!")
     console.log(query)
 

@@ -4,10 +4,12 @@ import ReviewCard from "./ReviewCard"
 import ReviewForm from "./ReviewForm"
 import { useState } from "react"
 
-export default function ProductReviews({ reviews } : { reviews:ReviewObj[] }) {
+export default function ProductReviews({ reviews, session } : { reviews:ReviewObj[], session:any }) {
     const [showForm, setShowForm] = useState<boolean>(false)
     const [reviewData, setReviewData] = useState(reviews)
     const reviewTags = ["running", "scrambling"]
+
+    // Check if user has voted
 
     const allReviews = reviewData.map((review:ReviewObj) => 
         <ReviewCard 
@@ -16,6 +18,7 @@ export default function ProductReviews({ reviews } : { reviews:ReviewObj[] }) {
             tags={reviewTags} 
             canEdit={false}
             canVote={true}
+            session={session}
         />)
 
     return ( 

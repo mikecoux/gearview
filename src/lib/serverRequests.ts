@@ -16,6 +16,7 @@ export async function getAllProducts() {
         const coll = client.db("gearview-db").collection('products')
 
         const results = await coll.find({})
+            .sort({ rei_rating: -1 })
             .toArray();
 
         return results

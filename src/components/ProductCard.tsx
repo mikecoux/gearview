@@ -10,10 +10,11 @@ export default function ProductCard(
     const reviewData = {
         _id: "rando133",
         username: "mikecoux",
-        rating: "3.5",
+        rating: 3.5,
         description: "Scrambles well, but not comfortable on longer outings.",
         product_id: "rando234",
-        votes: "2"
+        num_votes: 2,
+        voting_users: []
     }
 
     const productTags = ["trail", "rock plate", "sturdy", "heavy"]
@@ -35,7 +36,7 @@ export default function ProductCard(
                 <div>
                     <TagsList data={productTags} />
                 </div>
-                <h5>Rating: {rating}</h5>
+                <h5>REI rating: {rating}</h5>
                 <hr className="h-1 w-full"/>
                 <ReviewCard data={reviewData} tags={reviewTags} canEdit={false} canVote={false}/>
             </div>

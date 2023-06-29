@@ -2,7 +2,7 @@
 // Won't accept anything but 'any' for some reason
 
 interface userReviewData {
-    rating:string
+    rating:number
     description:string
 }
 
@@ -23,10 +23,17 @@ interface ReviewObj {
     _id: string
     email?: string
     username?: string
-    rating: string
+    rating: number
     description: string
     product_id: string
-    votes: string
+    num_votes: number
+    voting_users: {
+        user_id: string
+        vote: {
+            up_vote: boolean
+            down_vote: boolean
+        }
+    }[]
 }
 
 interface ProductObj {
@@ -38,4 +45,17 @@ interface ProductObj {
     rei_avg_rating: string
     rei_images: string[]
     rei_href: string
+}
+
+interface EditReviewData {
+    rating: number
+    description: string
+    num_votes: number
+    voting_users: {
+        user_id: string
+        vote: {
+            up_vote: boolean
+            down_vote: boolean
+        }
+    }[]
 }
