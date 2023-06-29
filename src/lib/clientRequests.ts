@@ -52,7 +52,8 @@ export async function updateReview(reviewId:string, review:any) {
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
             rating: review.rating,
-            description: review.description
+            description: review.description,
+            votes: review.votes
         })
     })
 

@@ -1,10 +1,12 @@
 'use client'
 
 import TagsList from "./TagsList"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { deleteReview, updateReview } from "@/lib/clientRequests"
 import { useSession } from "next-auth/react"
+import { useNotification } from "@/app/providers"
+
 interface EditData {
     rating: string
     description: string
@@ -38,7 +40,7 @@ export default function ReviewCard(
     }
 
     return (
-        <div>
+        <div className="hover:shadow-md p-4">
             {data.username ?
                 <h3 className="font-bold">{data.username}</h3>
             :
@@ -77,6 +79,10 @@ function Review (
     { id, reviewData, setReviewData, tags, canEdit, canVote, setShowEditForm, setIsHidden }: 
     { id:string, reviewData:EditData, setReviewData:any, tags:string[], canEdit:boolean, canVote:boolean, setShowEditForm:any, setIsHidden:any }
 ) {
+    // Use context to create an alert if a user tries to 
+    // vote and isn't signed in
+    const dispatch:any = useNotification()
+
     // Only logged in users can vote
     const { data: session } = useSession();
 
@@ -88,78 +94,95 @@ function Review (
         deleteReview(id)
         setIsHidden(true)
     }
+
+    const onVote = (vote:number) => {
+        if (!session) {
+            fireAlert()
+        }
+
+        let numVotes = parseInt(reviewData['votes'] ?? "0");
+        let newVotes = 0;
+
+        if (vote===1) {
+            newVotes = onUpVote(numVotes)
+
+        } else if (vote===2) {
+            newVotes = onDownVote(numVotes)
+        }
+
+        setReviewData( (reviewData:EditData) => {
+            return {
+                ...reviewData,
+                'votes': newVotes.toString()
+            }
+        })
+
+    }
+
+    // use the dispatch passed via context 
+    // to send a notification
+    const fireAlert = () => {
+        dispatch({
+            type: "ERROR",
+            message: "Must be logged in to vote."
+        })
+    }
     
-    // check what the user has voted for and increment accordingly
-    const onUpVote = () => {
+    // increment accordingly
+    const onUpVote = (numVotes:number) => {
+
+        if (session && upVoted) {
+            numVotes -= 1
+            setUpVoted(false)
+        }
+
         if (session && (!upVoted && !downVoted)) {
-            let numVotes = parseInt(reviewData['votes'] ?? "0")
-
-            setReviewData(
-                { 
-                    ...reviewData, 
-                    'votes': (numVotes += 1).toString()
-                }
-            )
-
+            numVotes += 1
             setUpVoted(true)
             setDownVoted(false)
 
         } else if (session && (!upVoted && downVoted)) {
-            let numVotes = parseInt(reviewData['votes'] ?? "0")
-
-            setReviewData(
-                { 
-                    ...reviewData, 
-                    'votes': (numVotes += 2).toString()
-                }
-            )
-
+            numVotes += 2
             setUpVoted(true)
             setDownVoted(false)
         }
+        
+        return numVotes
     }
 
-    // check what the user has voted for and decrement accordingly
-    const onDownVote = () => {
-        if (session && (!downVoted && !upVoted)) {
-            let numVotes = parseInt(reviewData['votes'] ?? "0")
+    // decrement accordingly
+    const onDownVote = (numVotes:number) => {
 
-            setReviewData(
-                { 
-                    ...reviewData, 
-                    'votes': (numVotes -= 1).toString()
-                }
-            )
-            
+        if (session && downVoted) {
+            numVotes += 1
+            setDownVoted(false)
+        }
+
+        if (session && (!downVoted && !upVoted)) {
+            numVotes -= 1
             setDownVoted(true)
             setUpVoted(false)
 
         } else if (session && (!downVoted && upVoted)) {
-            let numVotes = parseInt(reviewData['votes'] ?? "0")
-
-            setReviewData(
-                { 
-                    ...reviewData, 
-                    'votes': (numVotes -= 2).toString()
-                }
-            )
-
+            numVotes -= 2
             setDownVoted(true)
             setUpVoted(false)
-            
         }
+        
+        return numVotes
+
     }
 
     return (
         <div className="flex flex-row justify-between">
-            <div className="w-[90%]">
-                <h5>{reviewData.rating}</h5>
+            <div className="w-[90%] space-y-1">
+                <h5 className="text-2xl">{reviewData.rating}</h5>
                 <div>
                     <TagsList data={tags} />
                 </div>
                 <p>{reviewData.description}</p>
                 {canEdit ?
-                    <div className="flex flex-row space-x-2 h-[10%] items-center lg:w-1/4">
+                    <div className="flex flex-row space-x-2 items-center w-1/2 md:w-1/3 mt-2">
                         <button 
                             className="bg-white rounded hover:bg-neutral-200 py-1 px-2 outline outline-1 -outline-offset-1 text-black w-1/2 h-fit"
                             onClick={() => setShowEditForm(1)}
@@ -179,17 +202,19 @@ function Review (
             {canVote ?
                 <div className="flex flex-col items-center">
                     <button
-                        onClick={() => onUpVote()}
+                        onClick={() => onVote(1)}
+                        className=""
                     >
-                        Up
+                        { upVoted ? "▲" : "△" }
                     </button>
-                    <span>
+                    <span className="">
                         {reviewData.votes ?? "0"}
                     </span>
                     <button
-                        onClick={() => onDownVote()}
+                        onClick={() => onVote(2)}
+                        className=""
                     >
-                        Down
+                        {downVoted ? "▼" : "▽" }
                     </button>
                 </div>
             : null

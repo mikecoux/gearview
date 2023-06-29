@@ -105,6 +105,8 @@ export async function PATCH (
 
     const revId = { $oid: params.id }
     const query = { $set: { rating: rating, description: description, votes: votes }}
+    console.log("in the patch!")
+    console.log(query)
 
     const res = await fetch(`${dataUrl}/action/updateOne`, {
         method: "POST",

@@ -9,11 +9,17 @@ export default function Notification (props:any) {
 
     const handleStartTimer = () => {
         const id = setInterval(() => {
+            // check width state
+            // if less than 100%, increment
             setWidth((prev) => {
                 if (prev < 100) {
                     return prev + 0.5
                 }
-                setAnimation('animate-slideRight')
+
+                // close the notification
+                // clear the interval when width gets to 100
+                handleClose()
+                clearInterval(id)
                 return prev
             })
         }, 20)
@@ -21,8 +27,20 @@ export default function Notification (props:any) {
         setIntervalId(id)
     }
 
+    // pauses the interval on hover
     const handlePauseTimer = () => {
         clearInterval(intervalId)
+    }
+
+    const handleClose = () => {
+        handlePauseTimer()
+        setAnimation('animate-slideRight')
+        setTimeout(() => {
+            props.dispatch({
+                type: "REMOVE_NOTIFICATION",
+                id: props.id
+            })
+        }, 400)
     }
 
     useEffect(() => {
