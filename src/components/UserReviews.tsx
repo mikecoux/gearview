@@ -12,6 +12,7 @@ export default function UserReviews (
             tags={reviewTags} 
             canEdit={true}
             canVote={false}
+            session={null}
         />)
 
 
