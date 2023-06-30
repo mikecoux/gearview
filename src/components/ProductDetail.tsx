@@ -17,7 +17,7 @@ export default function ProductDetail(
 
     return (
         <div className="flex flex-col items-center p-8 space-y-4 h-full lg:w-1/2 md:w-2/3 w-5/6">
-            <h1 className="text-4xl">{brand}</h1>
+            <h1 className="text-4xl font-bold">{brand}</h1>
             <h3 className="text-2xl text-center">{title}</h3>
             <Image 
                 src={rei_images[0]} 

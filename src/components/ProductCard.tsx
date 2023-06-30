@@ -14,7 +14,7 @@ export default async function ProductCard(
     return(
         <Link href={`/products/${id}`} className="lg:w-1/4 md:w-1/3 w-5/6 m-4">
             <div className="flex flex-col items-center shadow-md p-8 space-y-2 h-full">
-                <h3 className="text-lg">{brand}</h3>
+                <h3 className="text-lg font-bold">{brand}</h3>
                 <h5>{title}</h5>
                     <Image 
                         src={images[0]} 
