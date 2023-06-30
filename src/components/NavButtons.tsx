@@ -102,13 +102,13 @@ export const MobileMenu = () => {
                 >
                     Browse
                 </li>
-                <li onClick={() => {
+                {/* <li onClick={() => {
                     router.push('/feed')
                     setShowMenu(!showMenu)
                     }}
                 >
                     For You
-                </li>
+                </li> */}
             </ul>
         </div>
     )

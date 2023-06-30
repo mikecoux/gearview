@@ -20,7 +20,7 @@ export default async function NavBar() {
                     <Image src="/assets/gearview-logo.png" alt="gearview logo" height={35} width={150} />
                 </Link>
                 <Link href={'/browse'}>Browse</Link>
-                <Link href={'/feed'}>For You</Link>
+                {/* <Link href={'/feed'}>For You</Link> */}
             </div>
             <SearchBar />
             { !session ?
