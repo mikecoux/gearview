@@ -5,7 +5,7 @@ const dataKey = process.env.DATA_API_KEY ?? ""
 
 export async function GET (
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: { id: string }}
 ) {
     const res = await fetch(`${dataUrl}/action/find`, {
         method: "POST",
@@ -108,8 +108,6 @@ export async function PATCH (
 
     const revId = { $oid: params.id }
     const query = { $set: { rating: rating, description: description, num_votes: num_votes, voting_users: voting_users }}
-    console.log("in the patch!")
-    console.log(query)
 
     const res = await fetch(`${dataUrl}/action/updateOne`, {
         method: "POST",

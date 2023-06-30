@@ -31,12 +31,10 @@ export async function POST (req:Request) {
         body: JSON.stringify(user)
     })
 
-    if (res instanceof Error) {
-        return NextResponse.json({
-            "error": res.message
-        })
+    if (!res.ok) {
+        return NextResponse.json(await res.json())
     }
 
-    return NextResponse.json(res)
+    return NextResponse.json(await res.json())
 
 }

@@ -4,7 +4,6 @@ import TagsList from "./TagsList"
 import { useEffect, useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { deleteReview, updateReview } from "@/lib/clientRequests"
-// import { useSession } from "next-auth/react"
 import { useNotification } from "@/app/providers"
 
 /**
@@ -33,10 +32,6 @@ export default function ReviewCard(
         voting_users: data.voting_users
     })
 
-    // Check if user has voted
-    // const { data: session } = useSession();
-    
-
     // – VOTE TYPE KEY – 0: no vote, 1: upvote, 2: downvote
     const [voteType, setVoteType] = useState(checkVote())
 
@@ -53,20 +48,16 @@ export default function ReviewCard(
             })
 
             if (session.user.id === ids[0]) {
-                console.log("user found!")
 
                 if (editReviewData.voting_users[0].vote.up_vote) {
                     return 1
                 } else return 2
 
             } else {
-                console.log("no user found")
-
                 return 0
             }
 
         } else {
-            console.log("no session found")
             return 0
         }
 
@@ -126,7 +117,7 @@ export default function ReviewCard(
     }
 
     return (
-        <div className="p-4">
+        <div className="p-4 hover:shadow-md">
             {data.username ?
                 <h3 className="font-bold">{data.username}</h3>
             :
@@ -256,6 +247,13 @@ function Review (
         } else if (session && voteType === 2) {
             numVotes += 2
             setVoteType(1)
+
+            setEditReviewData((editReviewData:EditReviewData) => {
+
+                return {
+                    ...editReviewData
+                }
+            })
         }
         
         return numVotes
@@ -305,6 +303,13 @@ function Review (
         } else if (session && voteType === 1) {
             numVotes -= 2
             setVoteType(2)
+
+            setEditReviewData((editReviewData:EditReviewData) => {
+
+                return {
+                    ...editReviewData
+                }
+            })
         }
         
         return numVotes

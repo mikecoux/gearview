@@ -47,8 +47,8 @@ export async function deleteReview(reviewId:string) {
     return res.json()
 }
 
+// update a review after a user votes or modifies
 export async function updateReview(reviewId:string, review:EditReviewData) {
-    console.log(reviewId)
     const res = await fetch(`/api/reviews/${reviewId}`, {
         method: "PATCH",
         headers: {"Content-Type":"application/json"},
@@ -81,6 +81,17 @@ export async function userSignup(data:SignupData) {
 
     if (!res.ok) {
         throw new Error("Failed to sign up user.")
+    }
+
+    return res.json()
+}
+
+// Find a user by id
+export async function userLoginById(userId:string) {
+    const res = await fetch (`/api/login/${userId}`)
+
+    if (!res.ok) {
+        throw new Error("Failed to get user.")
     }
 
     return res.json()

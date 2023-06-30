@@ -16,7 +16,7 @@ export async function getAllProducts() {
         const coll = client.db("gearview-db").collection('products')
 
         const results = await coll.find({})
-            .sort({ rei_rating: -1 })
+            .sort({ rei_avg_rating: -1 })
             .toArray();
 
         return results
@@ -49,13 +49,12 @@ export async function getProduct(id:string) {
 }
 
 // Get all reviews for a given product from Mongo
-export async function getProductReviews(productId:string) {
+export async function getAllReviews() {
     try {
         const client = await mongoClient;
         const coll = client.db('gearview-db').collection('reviews')
-        const query = { product_id: productId }
 
-        const results = await coll.find(query)
+        const results = await coll.find({})
             .toArray();
 
         return results
@@ -63,6 +62,49 @@ export async function getProductReviews(productId:string) {
     } catch (err) {
         throw new Error(
             "Failed to fetch reviews for provided product.", 
+            { cause: err }
+        )
+    }
+}
+
+// Get all reviews for a given product from Mongo
+export async function getProductReviews(productId:string) {
+    try {
+        const client = await mongoClient;
+        const coll = client.db('gearview-db').collection('reviews')
+        const query = { product_id: productId }
+
+        const results = await coll.find(query)
+            .sort({ num_votes: -1 })
+            .toArray();
+
+        return results
+
+    } catch (err) {
+        throw new Error(
+            "Failed to fetch reviews for provided product.", 
+            { cause: err }
+        )
+    }
+}
+
+// Get the top product review for a given product
+export async function getTopProductReview(productId:string) {
+    try {
+        const client = await mongoClient;
+        const coll = client.db('gearview-db').collection('reviews')
+        const query = { product_id: productId }
+
+        const result = await coll.find(query)
+            .sort({ num_votes: -1 })
+            .limit(1)
+            .toArray()
+
+        return result
+
+    } catch (err) {
+        throw new Error(
+            "Failed to fetch top review for provided product.", 
             { cause: err }
         )
     }

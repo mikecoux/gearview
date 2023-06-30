@@ -1,24 +1,15 @@
 import Link from "next/link"
 import Image from "next/image"
-import ReviewCard from "./ReviewCard"
+import ReviewHighlight from "./ReviewHighlight"
 import TagsList from "./TagsList"
+import { getTopProductReview } from "@/lib/serverRequests"
 
-export default function ProductCard(
-    { brand, id, images, title, gender, price, rating }:
-    { brand:string, id:string, images:string[], title:string, gender:string, price:string, rating:string }
+export default async function ProductCard(
+    { brand, id, images, title, gender, price, rating, highlight }:
+    { brand:string, id:string, images:string[], title:string, gender:string, price:string, rating:string, highlight:ReviewObj }
 ){
-    const reviewData = {
-        _id: "rando133",
-        username: "mikecoux",
-        rating: 3.5,
-        description: "Scrambles well, but not comfortable on longer outings.",
-        product_id: "rando234",
-        num_votes: 2,
-        voting_users: []
-    }
 
     const productTags = ["trail", "rock plate", "sturdy", "heavy"]
-    const reviewTags = ["running", "scrambling"]
 
     return(
         <Link href={`/products/${id}`} className="lg:w-1/4 md:w-1/3 w-5/6 m-4">
@@ -38,7 +29,7 @@ export default function ProductCard(
                 </div>
                 <h5>REI rating: {rating}</h5>
                 <hr className="h-1 w-full"/>
-                <ReviewCard data={reviewData} tags={reviewTags} canEdit={false} canVote={false}/>
+                <ReviewHighlight review={highlight} />
             </div>
         </Link>
     )
