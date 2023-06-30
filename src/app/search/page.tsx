@@ -1,5 +1,5 @@
 import ProductCard from "@/components/ProductCard";
-import { getAllProducts, getSearchResults } from "@/lib/serverRequests";
+import { getAllProducts, getSearchResults, getAllReviews } from "@/lib/serverRequests";
 interface SearchResult {
     brand: string
     title: string
@@ -23,6 +23,8 @@ export default async function Search({
         _id: product._id.toString()
     }))
 
+    const allReviews:any = await getAllReviews()
+
     // Iterate over each search result and find the corresponding product
     // Append the matched product to a new list
     const filteredProducts:ProductObj[] = []
@@ -34,6 +36,13 @@ export default async function Search({
     })
 
     const filteredProductCards = filteredProducts.map((product:ProductObj) => {
+
+        const sortedReviews = allReviews
+            .filter((review:ReviewObj) => {
+                return review.product_id === product._id.toString()
+            })
+            .sort((a:ReviewObj, b:ReviewObj) => b.num_votes - a.num_votes)
+
         return <ProductCard
             key={product._id}
             id={product._id}
@@ -43,6 +52,7 @@ export default async function Search({
             gender={product.gender}
             price={product.price}
             rating={product.rei_avg_rating}
+            highlight={sortedReviews[0]}
         />
     })
 

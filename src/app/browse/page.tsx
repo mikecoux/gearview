@@ -5,10 +5,6 @@ export default async function Browse(){
     const allProducts:any = await getAllProducts()
     const allReviews:any = await getAllReviews()
 
-    // allReviews.forEach((review:ReviewObj) => {
-    //     console.log(typeof review.product_id)
-    // })
-
     const allProductCards = allProducts.map((product:ProductObj) => {
 
         const sortedReviews = allReviews
