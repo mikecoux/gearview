@@ -4,6 +4,14 @@ import { Session } from "next-auth";
 
 // Post a review to Mongo via Data API
 export async function postReview(productId:string, user:Session["user"] | undefined, review:ReviewObj) {
+    const prod = await fetch(`/api/products/${productId}`)
+
+    if (!prod.ok) {
+        throw new Error("Failed to fetching matching product.")
+    }
+
+    const prodData = await prod.json()
+
     const res = await fetch(`/api/reviews/${productId}`, {
         credentials: "include",
         method: "POST",
@@ -14,13 +22,17 @@ export async function postReview(productId:string, user:Session["user"] | undefi
             username: user?.username,
             rating: review.rating,
             description: review.description,
+            product_brand: prodData.document.brand,
+            product_title: prodData.document.title,
             voting_users: [],
             num_votes: 0
         })
     })
+
     if (!res.ok) {
         throw new Error("Failed to post review.")
     }
+
     return res.json()
 }
 

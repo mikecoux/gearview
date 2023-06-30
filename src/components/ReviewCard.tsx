@@ -118,11 +118,19 @@ export default function ReviewCard(
 
     return (
         <div className="p-4 hover:shadow-md">
-            {data.username ?
-                <h3 className="font-bold">{data.username}</h3>
+            { canEdit ?
+                <div>
+                    <h3 className="text-2xl">{data.product_brand}</h3>
+                    <h5 className="italic">{data.product_title}</h5>
+                </div>
+
             :
-                <h3 className="font-bold">&#40;anonymous&#41;</h3>
+                data.username ?
+                    <h3 className="font-bold">{data.username}</h3>
+                :
+                    <h3 className="font-bold">&#40;anonymous&#41;</h3>
             }
+
             {
                 {
                     0: <Review 
@@ -170,30 +178,6 @@ function Review (
         setIsHidden(true)
     }
 
-    const onVote = (vote:number) => {
-        if (!session) {
-            fireAlert()
-        }
-
-        let numVotes = editReviewData['num_votes']
-        let newVotes = 0;
-
-        if (vote===1) {
-            newVotes = onUpVote(numVotes)
-
-        } else if (vote===2) {
-            newVotes = onDownVote(numVotes)
-        }
-
-        setEditReviewData((editReviewData:EditReviewData) => {
-
-            return {
-                ...editReviewData,
-                'num_votes': newVotes
-            }
-        })
-    }
-
     // use the dispatch passed via context 
     // to send a notification
     const fireAlert = () => {
@@ -202,14 +186,26 @@ function Review (
             message: "Must be logged in to vote."
         })
     }
+
+    const onVote = (vote:number) => {
+        if (!session) {
+            fireAlert()
+        }
+
+        if (vote===1) {
+            onUpVote()
+
+        } else if (vote===2) {
+            onDownVote()
+        }
+
+    }
     
     // increment accordingly
-    const onUpVote = (numVotes:number) => {
+    const onUpVote = () => {
 
         if (session && voteType === 1) {
-            numVotes -= 1
             setVoteType(0)
-
             setEditReviewData((editReviewData:EditReviewData) => {
 
                 return {
@@ -223,13 +219,12 @@ function Review (
         }
 
         if (session && voteType === 0) {
-            numVotes += 1
             setVoteType(1)
-
             setEditReviewData((editReviewData:EditReviewData) => {
 
                 return {
                     ...editReviewData,
+                    'num_votes': editReviewData.num_votes + 1,
                     'voting_users': [
                         ...editReviewData.voting_users,
                         {
@@ -245,32 +240,27 @@ function Review (
             })
 
         } else if (session && voteType === 2) {
-            numVotes += 2
             setVoteType(1)
-
-            setEditReviewData((editReviewData:EditReviewData) => {
-
-                return {
-                    ...editReviewData
-                }
-            })
-        }
-        
-        return numVotes
-    }
-
-    // decrement accordingly
-    const onDownVote = (numVotes:number) => {
-
-        if (session && voteType === 2) {
-            numVotes += 1
-            setVoteType(0)
-
             setEditReviewData((editReviewData:EditReviewData) => {
 
                 return {
                     ...editReviewData,
-                    'num_votes': editReviewData.num_votes - 1,
+                    'num_votes': editReviewData.num_votes + 2
+                }
+            })
+        }
+    }
+
+    // decrement accordingly
+    const onDownVote = () => {
+
+        if (session && voteType === 2) {
+            setVoteType(0)
+            setEditReviewData((editReviewData:EditReviewData) => {
+
+                return {
+                    ...editReviewData,
+                    'num_votes': editReviewData.num_votes + 1,
                     'voting_users': editReviewData.voting_users.filter((voter) => {
                         voter.user_id !== session.user.id
                     })
@@ -279,13 +269,12 @@ function Review (
         }
 
         if (session && voteType === 0) {
-            numVotes -= 1
             setVoteType(2)
-
             setEditReviewData((editReviewData:EditReviewData) => {
 
                 return {
                     ...editReviewData,
+                    'num_votes': editReviewData.num_votes - 1,
                     'voting_users': [
                         ...editReviewData.voting_users,
                         {
@@ -301,19 +290,15 @@ function Review (
             })
 
         } else if (session && voteType === 1) {
-            numVotes -= 2
             setVoteType(2)
-
             setEditReviewData((editReviewData:EditReviewData) => {
 
                 return {
-                    ...editReviewData
+                    ...editReviewData,
+                    'num_votes': editReviewData.num_votes - 2
                 }
             })
         }
-        
-        return numVotes
-
     }
 
     return (
@@ -412,14 +397,14 @@ function ReviewEditForm (
                 {...methods.register('description', {required: true})} 
                 type="text" 
                 name="description"
-                className="w-full"
+                className="w-full md:w-1/2"
             >
             </input>
             <div 
                 className="flex flex-row space-x-2 h-[10%] items-center">
                 <button 
                     type="submit"
-                    className="bg-white rounded hover:bg-neutral-200 py-1 px-2 outline outline-1 -outline-offset-1 text-black w-[48.5%] my-1"
+                    className="bg-slate-900 rounded py-1 px-2 text-white w-1/4 md:w-1/6 my-1"
                 >
                     Save
                 </button>

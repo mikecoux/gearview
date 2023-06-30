@@ -32,13 +32,15 @@ export async function POST (
     req: Request,
     { params }: { params: { id: string } }
 ) {
-    const { id, username, rating, description, num_votes, voting_users } = (await req.json()) as {
+    const { id, username, rating, description, num_votes, voting_users, product_brand, product_title } = (await req.json()) as {
         id: string | null | undefined,
         username: string | null | undefined,
         rating: string,
         description: string,
         num_votes: number,
         voting_users: ReviewObj["voting_users"]
+        product_brand: string,
+        product_title: string
     }
 
     const res = await fetch(`${dataUrl}/action/insertOne`, {
@@ -59,7 +61,9 @@ export async function POST (
                 num_votes: num_votes,
                 voting_users: voting_users,
                 user_id: id,
-                product_id: params.id
+                product_id: params.id,
+                product_brand: product_brand,
+                product_title: product_title
             }
         })
     })

@@ -15,9 +15,9 @@ export default function HomepageHero(){
     const [isMobileScreen, setIsMobileScreen] = useState<boolean>(false)
 
     const [heroIndex, setHeroIndex] = useState<number>(0)
-    const [progBar, setProgBar] = useState<number>(0)
-    const [progBar2, setProgBar2] = useState<number>(0)
-    const [progBar3, setProgBar3] = useState<number>(0)
+    const [progBar, setProgBar] = useState(0)
+    const [progBar2, setProgBar2] = useState(0)
+    const [progBar3, setProgBar3] = useState(0)
 
     const heroImgs:any[] = [runHero, hikeHero, climbHero]
     const mobileHeroImgs:any[] = [mobileRunHero, mobileHikeHero, mobileClimbHero]
@@ -48,29 +48,55 @@ export default function HomepageHero(){
     },[])
 
     useEffect(() => {
+
         if (heroIndex === 0){
+
+            setProgBar(0)
             setProgBar2(0);
             setProgBar3(0);
+
             const sliderInterval = setInterval(() => {
-                setProgBar(progBar => (progBar + 1) % 100)
-            }, 40)
+
+                setProgBar((progBar) => {
+                    if (progBar < 100) {
+                        return progBar + 0.5
+                    }
+                    return progBar
+                })
+
+            }, 20)
+
             return () => clearInterval(sliderInterval)
 
         } else if (heroIndex === 1 ) {
-            setProgBar(100);
-            setProgBar3(0);
+
             const sliderInterval = setInterval(() => {
-                setProgBar2(progBar2 => (progBar2 + 1) % 100)
-            }, 40)
+
+                setProgBar2((progBar) => {
+                    if (progBar < 100) {
+                        return progBar + 0.5
+                    }
+                    return progBar
+                })
+
+            }, 20)
+
             return () => clearInterval(sliderInterval)
 
         } else {
-            setProgBar(100);
-            setProgBar2(100);
+
             const sliderInterval = setInterval(() => {
-                setProgBar3(progBar3 => (progBar3 + 1) % 100)
-            }, 40)
+
+                setProgBar3((progBar) => {
+                    if (progBar < 100) {
+                        return progBar + 0.5
+                    }
+                    return progBar
+                })
+            }, 20)
+
             return () => clearInterval(sliderInterval)
+
         }
     },[heroIndex])
 
