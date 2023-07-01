@@ -119,7 +119,7 @@ export default function HomepageHero(){
                     />
                 }
             </div>
-            <div className="absolute top-1/4 left-[15%] md:left-[20%] flex flex-col">
+            <div className="absolute top-1/3 left-[15%] md:left-[20%] flex flex-col">
                 <div className="bg-slate-100/50 w-2 h-[40px] md:h-[60px] relative rounded-lg mb-2">
                         <div className="bg-black w-full rounded-lg absolute top-0 left-0 h-[0%]" style={{ height: `${progBar}%`}}></div>
                 </div>
@@ -130,9 +130,9 @@ export default function HomepageHero(){
                         <div className="bg-black w-full rounded-lg absolute top-0 left-0 h-[0%]" style={{ height: `${progBar3}%`}}></div>
                 </div>
             </div>
-            <div className='flex flex-col space-y-4 absolute top-1/4 left-[22.5%] w-1/2 md:w-fit'>
+            <div className='flex flex-col space-y-4 absolute top-1/3 left-[22.5%] w-1/2 md:w-fit'>
                 <h1 
-                    className='font-bold text-2xl md:text-4xl lg:text-6xl'>
+                    className='font-bold text-3xl md:text-4xl lg:text-6xl'>
                     {heroText[heroIndex]}
                 </h1>
                 <Link 

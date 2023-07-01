@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { deleteReview, updateReview } from "@/lib/clientRequests"
 import { useNotification } from "@/app/providers"
+import { isEqual } from "lodash"
 
 /**
  * Need to:
@@ -31,84 +32,53 @@ export default function ReviewCard(
         num_votes: data.num_votes,
         voting_users: data.voting_users
     })
-
     // – VOTE TYPE KEY – 0: no vote, 1: upvote, 2: downvote
     const [voteType, setVoteType] = useState(checkVote())
-
-
-    function checkVote ():number {
-        // Loop through each recorded voter and assign the 
-        // previous vote state if applicable
-        if (session ) {
-    
-            const ids: string[] = []
-
-            editReviewData.voting_users.forEach((voter) => {
-                ids.push(voter.user_id)
-            })
-
-            if (session.user.id === ids[0]) {
-
-                if (editReviewData.voting_users[0].vote.up_vote) {
-                    return 1
-                } else return 2
-
-            } else {
-                return 0
-            }
-
-        } else {
-            return 0
-        }
-
-    }
 
     // Save the previous value of state
     // causes a rerender with each vote
     const prevVote = useRef(editReviewData)
 
     useEffect(() => {
+
         prevVote.current = editReviewData
 
     }, [editReviewData])
 
-    if (!deepEqual(prevVote.current, editReviewData)) {
+    if (!isEqual(prevVote.current, editReviewData)) {
 
         updateReview(data._id, editReviewData)
 
     }
 
+    function checkVote () {
+        
+        if (session) {
 
-    // the deep equal
-    // Used to evaluate compare the previous version "vote state"
-    // with the new one. If there is a difference, patch the DB
-    function deepEqual (prevReview:any, newReview:any, visited = new Map<any, any>()): boolean {
+            const user = editReviewData.voting_users.filter((voter) => {
+                return voter.user_id === session.user.id 
 
-        if (visited.has(prevReview) || visited.has(newReview)) {
-            return visited.get(prevReview) === newReview && visited.get(newReview) === prevReview;
-        }
+            })
 
-        visited.set(prevReview, newReview);
-        visited.set(newReview, prevReview);
+            if (user.length > 0) {
 
-        // Get the keys of both objects
-        const prevKeys = Object.keys(prevReview)
-        const newKeys = Object.keys(newReview)
+                if (user[0].vote.up_vote) {
+                    return 1
 
-        // Check if the number of keys is the same
-        if (prevKeys.length !== newKeys.length) {
-            return false;
-        }
+                } else {
+                    return 2
 
-        // Iterate through the keys and compare the values recursively
-        for (const key of prevKeys) {
-            if (!newKeys.includes(key) || !deepEqual(prevReview[key], newReview[key], visited)) {
-                return false;
+                }     
+                   
+            } else {
+                return 0
+
             }
+
+        } else {
+            return 0
+
         }
-
-        return true
-
     }
 
     // hide the review when user deletes
@@ -117,7 +87,7 @@ export default function ReviewCard(
     }
 
     return (
-        <div className="p-4 hover:shadow-md">
+        <div className="p-2 hover:shadow-md">
             { canEdit ?
                 <div>
                     <h3 className="text-2xl">{data.product_brand}</h3>
@@ -204,100 +174,140 @@ function Review (
     // increment accordingly
     const onUpVote = () => {
 
-        if (session && voteType === 1) {
-            setVoteType(0)
-            setEditReviewData((editReviewData:EditReviewData) => {
+        switch (voteType) {
 
-                return {
-                    ...editReviewData,
-                    'num_votes': editReviewData.num_votes - 1,
-                    'voting_users': editReviewData.voting_users.filter((voter) => {
-                        voter.user_id !== session.user.id
-                    }) ?? []
-                }
-            })
-        }
+            case 0:
 
-        if (session && voteType === 0) {
-            setVoteType(1)
-            setEditReviewData((editReviewData:EditReviewData) => {
+                setVoteType(1)
+                setEditReviewData((editReviewData:EditReviewData) => {
 
-                return {
-                    ...editReviewData,
-                    'num_votes': editReviewData.num_votes + 1,
-                    'voting_users': [
-                        ...editReviewData.voting_users,
-                        {
-                            user_id: session.user.id,
-                            vote: {
-                                up_vote: true,
-                                down_vote: false
+                    return {
+                        ...editReviewData,
+                        'num_votes': editReviewData.num_votes + 1,
+                        'voting_users': [
+                            ...editReviewData.voting_users,
+                            {
+                                user_id: session.user.id,
+                                vote: {
+                                    up_vote: true,
+                                    down_vote: false
+                                }
+                
                             }
-            
-                        }
-                    ]
-                }
-            })
+                        ]
+                    }
+                })
+                break;
 
-        } else if (session && voteType === 2) {
-            setVoteType(1)
-            setEditReviewData((editReviewData:EditReviewData) => {
+            case 1:
 
-                return {
-                    ...editReviewData,
-                    'num_votes': editReviewData.num_votes + 2
-                }
-            })
+                setVoteType(0)
+                setEditReviewData((editReviewData:EditReviewData) => {
+
+                    return {
+                        ...editReviewData,
+                        'num_votes': editReviewData.num_votes - 1,
+                        'voting_users': editReviewData.voting_users.filter((voter) => {
+                            voter.user_id !== session.user.id
+                        })
+                    }
+                })
+                break;
+
+            case 2:
+
+                setVoteType(1)
+                setEditReviewData((editReviewData:EditReviewData) => {
+
+                    return {
+                        ...editReviewData,
+                        'num_votes': editReviewData.num_votes + 2,
+                        'voting_users': [
+                            editReviewData.voting_users.filter((voter) => {
+                                voter.user_id !== session.user.id
+                            }),
+                            {
+                                user_id: session.user.id as string,
+                                vote: {
+                                    up_vote: true,
+                                    down_vote: false
+                                }
+                
+                            }
+                        ]
+                    }
+                })
+                break;
         }
     }
 
     // decrement accordingly
     const onDownVote = () => {
 
-        if (session && voteType === 2) {
-            setVoteType(0)
-            setEditReviewData((editReviewData:EditReviewData) => {
 
-                return {
-                    ...editReviewData,
-                    'num_votes': editReviewData.num_votes + 1,
-                    'voting_users': editReviewData.voting_users.filter((voter) => {
-                        voter.user_id !== session.user.id
-                    })
-                }
-            })
-        }
+        switch (voteType){
+            case 0:
 
-        if (session && voteType === 0) {
-            setVoteType(2)
-            setEditReviewData((editReviewData:EditReviewData) => {
+                setVoteType(2)
+                setEditReviewData((editReviewData:EditReviewData) => {
 
-                return {
-                    ...editReviewData,
-                    'num_votes': editReviewData.num_votes - 1,
-                    'voting_users': [
-                        ...editReviewData.voting_users,
-                        {
-                            user_id: session.user.id,
-                            vote: {
-                                up_vote: false,
-                                down_vote: true
+                    return {
+                        ...editReviewData,
+                        'num_votes': editReviewData.num_votes - 1,
+                        'voting_users': [
+                            ...editReviewData.voting_users,
+                            {
+                                user_id: session.user.id,
+                                vote: {
+                                    up_vote: false,
+                                    down_vote: true
+                                }
+                
                             }
-            
-                        }
-                    ]
-                }
-            })
+                        ]
+                    }
+                })
+                break;
 
-        } else if (session && voteType === 1) {
-            setVoteType(2)
-            setEditReviewData((editReviewData:EditReviewData) => {
+            case 1:
 
-                return {
-                    ...editReviewData,
-                    'num_votes': editReviewData.num_votes - 2
-                }
-            })
+                setVoteType(2)
+                setEditReviewData((editReviewData:EditReviewData) => {
+
+                    return {
+                        ...editReviewData,
+                        'num_votes': editReviewData.num_votes - 2,
+                        'voting_users': [
+                            editReviewData.voting_users.filter((voter) => {
+                                voter.user_id !== session.user.id
+                            }),
+                            {
+                                user_id: session.user.id,
+                                vote: {
+                                    up_vote: false,
+                                    down_vote: true
+                                }
+                
+                            }
+                        ]
+                    }
+                })
+                break;
+
+            case 2: 
+
+                setVoteType(0)
+                setEditReviewData((editReviewData:EditReviewData) => {
+
+                    return {
+                        ...editReviewData,
+                        'num_votes': editReviewData.num_votes + 1,
+                        'voting_users': editReviewData.voting_users.filter((voter) => {
+                            voter.user_id !== session.user.id
+                        })
+                    }
+                })
+                break;
         }
     }
 

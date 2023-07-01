@@ -16,7 +16,7 @@ export default function ProductDetail(
     const productTags = ["trail", "rock plate", "sturdy", "heavy"]
 
     return (
-        <div className="flex flex-col items-center p-8 space-y-4 h-full lg:w-1/2 md:w-2/3 w-5/6">
+        <div className="flex flex-col items-center p-8 space-y-4 h-full lg:w-1/2 md:w-2/3 w-11/12">
             <h1 className="text-4xl font-bold">{brand}</h1>
             <h3 className="text-2xl text-center">{title}</h3>
             <Image 

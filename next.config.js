@@ -5,8 +5,5 @@ module.exports = {
 		domains: [
 			'res.cloudinary.com'
 		]
-	},
-	experimental: {
-		serverActions: true,
-	},
+	}
 }
