@@ -160,6 +160,7 @@ function Review (
     const onVote = (vote:number) => {
         if (!session) {
             fireAlert()
+            return null
         }
 
         if (vote===1) {
